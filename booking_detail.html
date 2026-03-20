@@ -1,0 +1,249 @@
+<!-- booking_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Booking Status - WASH EASE</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --card: #FFFFFF;
+    --primary: #2C4A3E;
+    --primary-light: #3D6B5C;
+    --primary-dark: #1A2E26;
+    --accent: #E8A87C;
+    --accent-hover: #D4956A;
+    --accent2: #D4C5B0;
+    --text: #1A1A1A;
+    --text-muted: #6B7280;
+    --pending: #F59E0B;
+    --process: #3B82F6;
+    --done: #10B981;
+    --danger: #EF4444;
+    --border: #E5DDD0;
+    --shadow: 0 4px 24px rgba(44,74,62,0.10);
+    --shadow-hover: 0 8px 32px rgba(44,74,62,0.18);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: var(--font-body);
+    background: #D8D0C4;
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    height: 100vh;
+    max-height: 844px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .screen { display:flex; flex-direction:column; height:100%; animation: slideIn 0.28s cubic-bezier(0.4,0,0.2,1); }
+
+  @keyframes slideIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes shimmer { from{transform:translateX(20px);opacity:1} to{transform:translateX(-60px);opacity:0} }
+
+  /* HEADER */
+  .header {
+    padding: 16px 20px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: relative; z-index: 10;
+    flex-shrink: 0;
+  }
+  .header-title { font-family:var(--font-display); font-size:20px; color:var(--primary); }
+  .header .back-btn {
+    width:36px; height:36px; border-radius:50%;
+    background:var(--bg); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; color:var(--primary); transition:var(--transition);
+  }
+  .header .back-btn:hover { background:var(--primary); color:#fff; transform:translateX(-2px); box-shadow:0 4px 12px rgba(44,74,62,0.25); }
+  .header .back-btn:active { transform:scale(0.92); }
+
+  /* SCROLL */
+  .scroll-content { flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; }
+  .scroll-content::-webkit-scrollbar { width:4px; }
+  .scroll-content::-webkit-scrollbar-track { background:transparent; }
+  .scroll-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  /* CARDS */
+  .card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:12px; transition:var(--transition); }
+  .card:hover { box-shadow:var(--shadow-hover); }
+
+  /* BADGES */
+  .badge { display:inline-flex; align-items:center; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; letter-spacing:0.3px; }
+  .badge-pending { background:rgba(245,158,11,0.15); color:var(--pending); }
+  .badge-process { background:rgba(59,130,246,0.15); color:var(--process); }
+  .badge-done { background:rgba(16,185,129,0.15); color:var(--done); }
+
+  /* PROGRESS BAR */
+  .progress-bar { height:6px; background:var(--border); border-radius:3px; overflow:hidden; margin:8px 0; }
+  .progress-fill {
+    height:100%; background:linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius:3px; transition:width 0.6s cubic-bezier(0.4,0,0.2,1); position:relative;
+  }
+  .progress-fill::after { content:''; position:absolute; top:0; right:0; width:20px; height:100%; background:rgba(255,255,255,0.4); animation:shimmer 1.5s infinite; }
+
+  .empty-state { text-align:center; padding:40px 20px; color:var(--text-muted); }
+  .empty-state .empty-icon { font-size:48px; margin-bottom:12px; }
+  .empty-state p { font-size:14px; }
+
+  /* TOAST */
+  .toast {
+    position:absolute; bottom:110px; left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--primary); color:#fff; padding:12px 24px;
+    border-radius:30px; font-size:14px; font-weight:600;
+    opacity:0; transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+    white-space:nowrap; pointer-events:none; z-index:100;
+    box-shadow:0 8px 24px rgba(44,74,62,0.3); max-width:330px;
+    text-align:center; white-space:normal;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ====== BOOKING DETAIL ====== -->
+  <div class="screen active" id="screen-booking-status">
+    <div class="header">
+      <button class="back-btn" onclick="location.href='services.html'">←</button>
+      <div class="header-title">Booking Status</div>
+      <div style="width:36px"></div>
+    </div>
+    <div class="scroll-content" id="booking-detail-content"></div>
+  </div>
+
+</div><!-- end .phone -->
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+// Check auth
+if (!currentUser) {
+  location.href = 'login.html';
+}
+
+// Get booking ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const bookingId = parseInt(urlParams.get('id'));
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ` toast-${type}` : '');
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════
+// STATUS HELPERS
+// ═══════════════════════════════════════════════
+function badge(status) {
+  const map = { pending:'badge-pending', process:'badge-process', done:'badge-done' };
+  const lbl = { pending:'Pending', process:'Washing 🔄', done:'Done ✅' };
+  return `<span class="badge ${map[status]||''}">${lbl[status]||status}</span>`;
+}
+
+// ═══════════════════════════════════════════════
+// BOOKING DETAIL
+// ═══════════════════════════════════════════════
+function renderBookingDetail(id) {
+  const b = bookings.find(x => x.id === id);
+  if (!b) {
+    document.getElementById('booking-detail-content').innerHTML = `
+      <div class="empty-state"><div class="empty-icon">📭</div><p>Booking not found.</p></div>`;
+    return;
+  }
+
+  const s1 = b.status !== 'pending' ? 'var(--primary)' : 'var(--border)';
+  const s2 = b.status === 'done' ? 'var(--primary)' : 'var(--border)';
+  const c1 = b.status !== 'pending' ? `background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 4px 12px rgba(44,74,62,0.3)` : `background:var(--border);color:var(--text-muted)`;
+  const c2 = b.status === 'process' || b.status === 'done' ? `background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 4px 12px rgba(44,74,62,0.3)` : `background:var(--border);color:var(--text-muted)`;
+  const c3 = b.status === 'done' ? `background:linear-gradient(135deg,var(--done),#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3)` : `background:var(--border);color:var(--text-muted)`;
+
+  document.getElementById('booking-detail-content').innerHTML = `
+    <div style="background:linear-gradient(135deg,var(--primary-dark),var(--primary-light));border-radius:var(--radius);padding:22px;margin-bottom:16px;color:#fff;position:relative;overflow:hidden;">
+      <div style="position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.07);top:-20px;right:-20px;"></div>
+      <div style="font-size:13px;opacity:0.7;margin-bottom:4px;">Booking Number</div>
+      <div style="font-family:var(--font-display);font-size:30px;">#${b.id}</div>
+      <div style="font-size:13px;opacity:0.7;margin-top:8px;">${b.date} · ${b.time}</div>
+      <div style="margin-top:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span class="badge" style="background:rgba(255,255,255,0.18);color:#fff;">${b.serviceIcon} ${b.service}</span>
+        ${badge(b.status)}
+      </div>
+      ${b.statusUpdatedAt ? `<div style="font-size:12px;opacity:0.6;margin-top:8px;">🕐 Last updated: ${b.statusUpdatedAt}</div>` : ''}
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:14px;">Order Progress</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
+        <div style="text-align:center;flex:1;">
+          <div style="width:38px;height:38px;border-radius:50%;${c1};display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:16px;">✓</div>
+          <div style="font-size:11px;font-weight:600;color:var(--primary);">Received</div>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding-bottom:20px;"><div style="height:2px;width:100%;background:${s1};transition:background 0.5s;"></div></div>
+        <div style="text-align:center;flex:1;">
+          <div style="width:38px;height:38px;border-radius:50%;${c2};display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:16px;">🧺</div>
+          <div style="font-size:11px;color:var(--text-muted);">Washing</div>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding-bottom:20px;"><div style="height:2px;width:100%;background:${s2};transition:background 0.5s;"></div></div>
+        <div style="text-align:center;flex:1;">
+          <div style="width:38px;height:38px;border-radius:50%;${c3};display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:16px;">✅</div>
+          <div style="font-size:11px;color:var(--text-muted);">Ready</div>
+        </div>
+      </div>
+      ${b.status === 'process' ? `<div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div><div style="font-size:12px;color:var(--text-muted);text-align:center;">Washing in progress…</div>` : ''}
+      ${b.status === 'done' ? `<div style="text-align:center;margin-top:8px;font-size:13px;color:var(--done);font-weight:700;">🎉 Ready for pick-up!</div>` : ''}
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:10px;">Order Details</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--text-muted);font-size:14px;">Service</span><span style="font-weight:600;font-size:14px;">${b.service}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--text-muted);font-size:14px;">Customer</span><span style="font-weight:600;font-size:14px;">${b.name}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--text-muted);font-size:14px;">Date</span><span style="font-weight:600;font-size:14px;">${b.date}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--text-muted);font-size:14px;">Time Slot</span><span style="font-weight:600;font-size:14px;">${b.time}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--text-muted);font-size:14px;">Booked at</span><span style="font-weight:600;font-size:14px;">${b.bookedAt}</span></div>
+      <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-muted);font-size:14px;">Total</span><span style="font-weight:700;font-size:16px;color:var(--primary);">₱ ${b.price}.00</span></div>
+    </div>`;
+}
+
+// Init
+renderBookingDetail(bookingId);
+</script>
+</body>
+</html>

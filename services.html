@@ -1,0 +1,807 @@
+<!-- services.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Services - WASH EASE</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --card: #FFFFFF;
+    --primary: #2C4A3E;
+    --primary-light: #3D6B5C;
+    --primary-dark: #1A2E26;
+    --accent: #E8A87C;
+    --text: #1A1A1A;
+    --text-muted: #6B7280;
+    --pending: #F59E0B;
+    --process: #3B82F6;
+    --done: #10B981;
+    --danger: #EF4444;
+    --border: #E5DDD0;
+    --shadow: 0 4px 24px rgba(44,74,62,0.10);
+    --shadow-hover: 0 8px 32px rgba(44,74,62,0.18);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: var(--font-body);
+    background: #D8D0C4;
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    height: 100vh;
+    max-height: 844px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .screen { display:flex; flex-direction:column; height:100%; animation: slideIn 0.28s cubic-bezier(0.4,0,0.2,1); }
+
+  @keyframes slideIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes notifPop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.9) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  @keyframes skeletonMove { from{background-position:200% 0} to{background-position:-200% 0} }
+  @keyframes searchSlideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes noResultBounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  @keyframes popIn { 0%{transform:scale(0.7);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+
+  /* HEADER */
+  .header {
+    padding: 16px 20px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg);
+    position: relative; z-index: 10;
+    flex-shrink: 0;
+  }
+  .header-title { font-family:var(--font-display); font-size:22px; color:var(--primary); }
+  .header-icon {
+    width:36px; height:36px; border-radius:50%;
+    background:var(--bg); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; color:var(--primary); transition:var(--transition);
+    flex-shrink: 0;
+  }
+  .header-icon:hover { background:var(--primary); color:#fff; transform:rotate(15deg) scale(1.1); }
+  .header-icon.active { background: var(--primary); color: #fff; transform: scale(1.05); }
+
+  /* SEARCH BAR */
+  .search-bar-wrapper {
+    overflow: hidden; max-height: 0; opacity: 0;
+    transition: max-height 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.22s ease, padding 0.25s ease;
+    padding: 0 20px; background: var(--bg); flex-shrink: 0;
+  }
+  .search-bar-wrapper.open { max-height: 72px; opacity: 1; padding: 0 20px 14px; animation: searchSlideDown 0.28s cubic-bezier(0.4,0,0.2,1); }
+  .search-input-row {
+    display: flex; align-items: center; background: var(--card);
+    border: 1.5px solid var(--border); border-radius: 30px;
+    padding: 10px 16px; gap: 10px;
+    box-shadow: 0 2px 10px rgba(44,74,62,0.08);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-input-row:focus-within { border-color: var(--primary-light); box-shadow: 0 2px 16px rgba(44,74,62,0.15); }
+  .search-icon-inner { font-size: 15px; color: var(--text-muted); flex-shrink: 0; }
+  .search-input { flex:1; border:none; outline:none; background:transparent; font-family:var(--font-body); font-size:14px; font-weight:500; color:var(--text); }
+  .search-input::placeholder { color: var(--text-muted); }
+  .search-clear { width:22px;height:22px;border-radius:50%;background:var(--border);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-muted);flex-shrink:0;transition:var(--transition);opacity:0;pointer-events:none; }
+  .search-clear.visible { opacity:1; pointer-events:auto; }
+  .search-clear:hover { background:var(--primary); color:#fff; }
+
+  /* SCROLL */
+  .scroll-content { flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; padding-top:8px; }
+  .scroll-content::-webkit-scrollbar { width:4px; }
+  .scroll-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  /* BOTTOM NAV */
+  .bottom-nav { display:flex; background:var(--card); border-top:1px solid var(--border); padding:8px 0 16px; flex-shrink:0; }
+  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 0; cursor:pointer; border:none; background:none; color:var(--text-muted); font-family:var(--font-body); font-size:11px; font-weight:500; transition:var(--transition); border-radius:var(--radius-sm); margin:0 4px; position:relative; }
+  .nav-item:hover { color:var(--primary); background:rgba(44,74,62,0.06); transform:translateY(-2px); }
+  .nav-item.active { color:var(--primary); }
+  .nav-item.active .nav-icon { transform:scale(1.15); filter:drop-shadow(0 2px 4px rgba(44,74,62,0.2)); }
+  .nav-icon { font-size:22px; transition:var(--transition); }
+  .nav-badge { position:absolute;top:4px;right:8px;min-width:18px;height:18px;background:var(--danger);border-radius:20px;font-size:10px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--card);animation:notifPop 0.3s cubic-bezier(0.4,0,0.2,1);z-index:5; }
+
+  /* BUTTONS */
+  .btn { width:100%; padding:15px; border-radius:var(--radius-sm); border:none; cursor:pointer; font-family:var(--font-body); font-size:15px; font-weight:600; transition:var(--transition); letter-spacing:0.3px; position:relative; overflow:hidden; }
+  .btn:active { transform:scale(0.97); }
+  .btn-primary { background:linear-gradient(135deg, var(--primary), var(--primary-light)); color:#fff; box-shadow:0 4px 16px rgba(44,74,62,0.25); }
+  .btn-primary:hover { background:linear-gradient(135deg, var(--primary-dark), var(--primary)); box-shadow:0 8px 24px rgba(44,74,62,0.35); transform:translateY(-2px); }
+  .btn-primary:active { transform:translateY(0) scale(0.97); }
+  .btn-secondary { background:var(--bg); color:var(--primary); border:2px solid var(--primary); }
+  .btn-secondary:hover { background:var(--primary); color:#fff; }
+
+  /* GREETING */
+  .greeting { margin-bottom:20px; }
+  .greeting-sub { font-size:13px; color:var(--text-muted); font-weight:500; }
+  .greeting-name { font-family:var(--font-display); font-size:28px; color:var(--primary); line-height:1.2; }
+
+  /* SERVICE GRID */
+  .service-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+
+  .service-card {
+    background:var(--card); border-radius:var(--radius-sm);
+    display:flex; flex-direction:column; align-items:stretch;
+    cursor:pointer; border:2px solid transparent; transition:var(--transition);
+    box-shadow:0 2px 8px rgba(0,0,0,0.06); overflow:hidden;
+  }
+  .service-card:hover { border-color:rgba(44,74,62,0.35); transform:translateY(-3px) scale(1.02); box-shadow:0 8px 20px rgba(44,74,62,0.12); }
+  .service-card.selected { border-color:var(--primary); box-shadow:0 4px 16px rgba(44,74,62,0.22); }
+  .service-card:active { transform:scale(0.97); }
+  .service-card.hidden { display:none; }
+
+  .svc-label mark { background:rgba(232,168,124,0.45); color:var(--primary-dark); border-radius:3px; padding:0 1px; font-weight:700; }
+
+  .svc-photo { width:100%; aspect-ratio:1/1; overflow:hidden; position:relative; background:#e4dcd0; }
+  .svc-photo img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.38s cubic-bezier(0.4,0,0.2,1); }
+  .service-card:hover .svc-photo img { transform:scale(1.1); }
+  .svc-photo .skel { position:absolute;inset:0;background:linear-gradient(90deg,#e4dcd0 25%,#f0e8dc 50%,#e4dcd0 75%);background-size:200% 100%;animation:skeletonMove 1.4s infinite;z-index:1;transition:opacity 0.3s; }
+
+  /* ✅ CHECK BADGE — shows count for multi-select */
+  .svc-check {
+    position:absolute; top:6px; right:6px;
+    width:22px; height:22px;
+    background:var(--primary); color:#fff;
+    border-radius:50%; font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 6px rgba(44,74,62,0.35);
+    opacity:0; transform:scale(0.5);
+    transition:all 0.2s cubic-bezier(0.4,0,0.2,1); z-index:2;
+  }
+  .service-card.selected .svc-check { opacity:1; transform:scale(1); animation:popIn 0.22s cubic-bezier(0.4,0,0.2,1); }
+  .svc-photo::after { content:''; position:absolute; inset:0; background:rgba(44,74,62,0); transition:background 0.22s; pointer-events:none; z-index:1; }
+  .service-card.selected .svc-photo::after { background:rgba(44,74,62,0.12); }
+
+  .svc-label { font-size:11px; font-weight:600; color:var(--text); text-align:center; padding:8px 4px 10px; line-height:1.3; }
+
+  /* NO RESULTS */
+  .no-results { display:none; flex-direction:column; align-items:center; justify-content:center; padding:24px 16px; text-align:center; animation:noResultBounce 0.4s ease; grid-column:1/-1; }
+  .no-results.show { display:flex; }
+  .no-results-icon { font-size:36px; margin-bottom:10px; }
+  .no-results-text { font-size:14px; font-weight:600; color:var(--text-muted); }
+  .no-results-sub { font-size:12px; color:var(--text-muted); margin-top:4px; opacity:0.7; }
+
+  /* SEARCH COUNT */
+  .search-count { font-size:12px; color:var(--text-muted); font-weight:500; margin-bottom:10px; margin-top:-4px; transition:opacity 0.2s; display:none; }
+  .search-count.show { display:block; }
+
+  .section-title { font-family:var(--font-display); font-size:18px; color:var(--text); margin-bottom:14px; }
+
+  /* ✅ SELECTED SERVICES SUMMARY — multi-select list */
+  .selected-services-box {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    transition: var(--transition);
+  }
+  .selected-services-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .selected-services-label { font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px; }
+  .selected-services-count {
+    background: var(--primary); color:#fff;
+    font-size:11px; font-weight:700;
+    padding:2px 8px; border-radius:20px;
+  }
+  .selected-services-list { display:flex; flex-direction:column; gap:8px; }
+  .selected-service-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 12px;
+    background:var(--bg); border-radius:8px;
+    animation: fadeUp 0.2s ease;
+  }
+  .selected-service-info { display:flex; align-items:center; gap:8px; }
+  .selected-service-icon { font-size:18px; }
+  .selected-service-name { font-size:13px; font-weight:600; color:var(--primary); }
+  .selected-service-price { font-size:13px; font-weight:700; color:var(--text-muted); }
+  .remove-service-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--danger); font-size:16px; padding:2px 4px;
+    border-radius:50%; transition:var(--transition);
+    line-height:1;
+  }
+  .remove-service-btn:hover { background:rgba(239,68,68,0.1); transform:scale(1.15); }
+
+  .total-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:10px; margin-top:4px;
+    border-top:1px solid var(--border);
+  }
+  .total-label { font-size:13px; font-weight:700; color:var(--text); }
+  .total-amount { font-family:var(--font-display); font-size:20px; color:var(--primary); }
+
+  .empty-services-hint {
+    text-align:center; padding:12px 0 4px;
+    font-size:13px; color:var(--text-muted);
+  }
+
+  .badge { display:inline-flex; align-items:center; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; }
+  .badge-pending { background:rgba(245,158,11,0.15); color:var(--pending); }
+
+  /* DATE PICKER */
+  .date-picker { background:var(--card); border-radius:var(--radius-sm); padding:14px 16px; display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+  .date-picker .arrow { width:34px;height:34px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:18px;color:var(--primary);display:flex;align-items:center;justify-content:center;transition:var(--transition); }
+  .date-picker .arrow:hover { background:var(--primary); color:#fff; transform:scale(1.12); }
+  .date-text { font-size:14px; font-weight:600; color:var(--text); }
+
+  /* TIME SLOTS */
+  .time-slots { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .time-slot { padding:14px; border-radius:var(--radius-sm); border:1.5px solid var(--border); background:var(--card); cursor:pointer; text-align:center; transition:var(--transition); }
+  .time-slot:hover { border-color:var(--primary); background:rgba(44,74,62,0.04); transform:translateY(-2px); box-shadow:0 4px 12px rgba(44,74,62,0.1); }
+  .time-slot.selected { border-color:var(--primary); background:linear-gradient(135deg, var(--primary), var(--primary-light)); color:#fff; box-shadow:0 4px 16px rgba(44,74,62,0.25); }
+  .time-slot .time-label { font-size:11px; color:inherit; opacity:0.7; }
+  .time-slot .time-value { font-size:15px; font-weight:700; }
+
+  /* TOAST */
+  .toast { position:absolute;bottom:110px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--primary);color:#fff;padding:12px 24px;border-radius:30px;font-size:14px;font-weight:600;opacity:0;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);pointer-events:none;z-index:100;box-shadow:0 8px 24px rgba(44,74,62,0.3);max-width:330px;text-align:center;white-space:normal; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.toast-done { background:linear-gradient(135deg, var(--done), #059669); }
+  .toast.toast-process { background:linear-gradient(135deg, var(--process), #2563EB); }
+  .toast.toast-warn { background:linear-gradient(135deg, #F59E0B, #D97706); }
+
+  /* STATUS BANNER */
+  .status-banner { position:absolute;top:0;left:0;right:0;z-index:200;padding:14px 20px;display:flex;align-items:center;gap:12px;transform:translateY(-100%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);box-shadow:0 4px 20px rgba(0,0,0,0.15); }
+  .status-banner.show { transform:translateY(0); }
+  .status-banner.banner-process { background:linear-gradient(135deg, var(--process), #2563EB); color:#fff; }
+  .status-banner.banner-done { background:linear-gradient(135deg, var(--done), #059669); color:#fff; }
+  .status-banner-icon { font-size:22px; }
+  .status-banner-text { flex:1; }
+  .status-banner-title { font-size:14px; font-weight:700; }
+  .status-banner-sub { font-size:12px; opacity:0.85; margin-top:2px; }
+  .status-banner-close { opacity:0.7; cursor:pointer; font-size:18px; padding:4px; }
+  .status-banner-close:hover { opacity:1; }
+
+  /* PAYMENT MODAL */
+  .modal-overlay { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;visibility:hidden;transition:all 0.3s ease; }
+  .modal-overlay.show { opacity:1; visibility:visible; }
+  .payment-modal { background:var(--card);border-radius:var(--radius);padding:24px;width:90%;max-width:340px;box-shadow:var(--shadow-hover);animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
+  .modal-header { text-align:center; margin-bottom:20px; }
+  .modal-title { font-family:var(--font-display); font-size:22px; color:var(--primary); margin-bottom:4px; }
+  .modal-subtitle { font-size:13px; color:var(--text-muted); }
+  .price-display { background:linear-gradient(135deg, var(--primary), var(--primary-light)); color:#fff; padding:16px; border-radius:var(--radius-sm); text-align:center; margin-bottom:20px; }
+  .price-label { font-size:12px; opacity:0.8; margin-bottom:4px; }
+  .price-value { font-size:28px; font-weight:700; font-family:var(--font-display); }
+  .price-breakdown { font-size:11px; opacity:0.7; margin-top:4px; }
+  .payment-options { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+  .payment-option { display:flex;align-items:center;gap:12px;padding:16px;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);background:var(--card); }
+  .payment-option:hover { border-color:var(--primary-light); background:rgba(44,74,62,0.04); }
+  .payment-option.selected { border-color:var(--primary); background:rgba(44,74,62,0.06); box-shadow:0 4px 12px rgba(44,74,62,0.15); }
+  .payment-icon { width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0; }
+  .payment-icon.cash { background:linear-gradient(135deg, #10B981, #059669); }
+  .payment-icon.gcash { background:linear-gradient(135deg, #0077FF, #0055CC); }
+  .payment-info { flex:1; }
+  .payment-name { font-size:15px; font-weight:600; color:var(--text); margin-bottom:2px; }
+  .payment-desc { font-size:12px; color:var(--text-muted); }
+  .payment-check { width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:var(--transition); }
+  .payment-option.selected .payment-check { background:var(--primary); border-color:var(--primary); color:#fff; }
+  .modal-buttons { display:flex; gap:12px; }
+  .modal-buttons .btn { flex:1; }
+  .gcash-details { background:#F0F9FF;border:1px solid #0077FF;border-radius:var(--radius-sm);padding:12px;margin-top:12px;font-size:12px;color:#0055CC;display:none; }
+  .gcash-details.show { display:block; animation:fadeUp 0.3s ease; }
+  .gcash-qr { width:100%;height:160px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;border:2px dashed #0077FF; }
+  .gcash-number { text-align:center; font-weight:600; font-size:14px; }
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+
+  <div class="toast" id="toast"></div>
+
+  <div class="status-banner" id="status-banner">
+    <div class="status-banner-icon" id="banner-icon">🔔</div>
+    <div class="status-banner-text">
+      <div class="status-banner-title" id="banner-title">Update</div>
+      <div class="status-banner-sub" id="banner-sub">Your booking status changed</div>
+    </div>
+    <div class="status-banner-close" onclick="closeBanner()">✕</div>
+  </div>
+
+  <!-- PAYMENT MODAL -->
+  <div class="modal-overlay" id="payment-modal">
+    <div class="payment-modal">
+      <div class="modal-header">
+        <div class="modal-title">💳 Payment Method</div>
+        <div class="modal-subtitle">PAYMENT</div>
+      </div>
+      <div class="price-display">
+        <div class="price-label">Total Amount</div>
+        <div class="price-value" id="modal-price">₱0</div>
+        <div class="price-breakdown" id="modal-breakdown"></div>
+      </div>
+      <div class="payment-options">
+        <div class="payment-option" id="pay-cash" onclick="selectPayment('cash')">
+          <div class="payment-icon cash">💵</div>
+          <div class="payment-info">
+            <div class="payment-name">Cash Payment</div>
+            <div class="payment-desc">Payment at counter</div>
+          </div>
+          <div class="payment-check">✓</div>
+        </div>
+        <div class="payment-option" id="pay-gcash" onclick="selectPayment('gcash')">
+          <div class="payment-icon gcash">📱</div>
+          <div class="payment-info">
+            <div class="payment-name">GCash</div>
+            <div class="payment-desc">Mobile wallet payment</div>
+          </div>
+          <div class="payment-check">✓</div>
+        </div>
+        <div class="gcash-details" id="gcash-details">
+          <div class="gcash-qr"><span style="font-size:48px;color:#0077FF;">📲</span></div>
+          <div class="gcash-number">GCash: 0917-XXX-XXXX</div>
+          <div style="text-align:center;margin-top:8px;font-size:11px;">Scan QR or send to number</div>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closePaymentModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmPayment()">Confirm Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES SCREEN -->
+  <div class="screen active" id="screen-services">
+
+    <div class="header">
+      <div></div>
+      <div class="header-title">Washease 🫧</div>
+      <button class="header-icon" id="search-toggle-btn" onclick="toggleSearch()">🔍</button>
+    </div>
+
+    <div class="search-bar-wrapper" id="search-bar-wrapper">
+      <div class="search-input-row">
+        <span class="search-icon-inner">🔍</span>
+        <input class="search-input" id="search-input" type="text" placeholder="Search services…"
+          oninput="filterServices(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="search-clear" id="search-clear-btn" onclick="clearSearch()">✕</button>
+      </div>
+    </div>
+
+    <div class="scroll-content">
+      <div class="greeting">
+        <div class="greeting-sub">Good <span id="greeting-part">morning</span>,</div>
+        <div class="greeting-name">Hi, <span id="user-display-name">User</span>! 👋</div>
+      </div>
+
+      <!-- ✅ HINT: tap multiple to select -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="section-title" style="margin-bottom:0;">Our Services</div>
+        <div style="font-size:11px;color:var(--text-muted);font-weight:500;">Tap to select multiple</div>
+      </div>
+
+      <div class="search-count" id="search-count"></div>
+
+      <div class="service-grid" id="service-grid">
+
+        <div class="service-card selected" id="svc-washfold" data-name="Wash & Fold" onclick="toggleService('Wash & Fold','🧺','svc-washfold')">
+          <div class="svc-photo">
+            <div class="skel" id="skel-washfold"></div>
+            <span class="svc-check" id="chk-washfold">✓</span>
+            <img src="https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=300&q=80&auto=format&fit=crop"
+                 alt="Wash & Fold" onload="document.getElementById('skel-washfold').style.opacity='0'">
+          </div>
+          <div class="svc-label">Wash &amp; Fold</div>
+        </div>
+
+        <div class="service-card" id="svc-dry" data-name="Dry Cleaning" onclick="toggleService('Dry Cleaning','👔','svc-dry')">
+          <div class="svc-photo">
+            <div class="skel" id="skel-dry"></div>
+            <span class="svc-check" id="chk-dry">✓</span>
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80&auto=format&fit=crop"
+                 alt="Dry Cleaning" onload="document.getElementById('skel-dry').style.opacity='0'">
+          </div>
+          <div class="svc-label">Dry Cleaning</div>
+        </div>
+
+        <div class="service-card" id="svc-iron" data-name="Ironing" onclick="toggleService('Ironing','👕','svc-iron')">
+          <div class="svc-photo">
+            <div class="skel" id="skel-iron"></div>
+            <span class="svc-check" id="chk-iron">✓</span>
+            <img src="https://images.unsplash.com/photo-1489274495757-95c7c837b101?w=300&q=80&auto=format&fit=crop"
+                 alt="Ironing" onload="document.getElementById('skel-iron').style.opacity='0'">
+          </div>
+          <div class="svc-label">Ironing</div>
+        </div>
+
+        <div class="service-card" id="svc-stain" data-name="Stain Removal" onclick="toggleService('Stain Removal','🧴','svc-stain')">
+          <div class="svc-photo">
+            <div class="skel" id="skel-stain"></div>
+            <span class="svc-check" id="chk-stain">✓</span>
+            <img src="https://images.unsplash.com/photo-1563453392212-326f5e854473?w=300&q=80&auto=format&fit=crop"
+                 alt="Stain Removal" onload="document.getElementById('skel-stain').style.opacity='0'">
+          </div>
+          <div class="svc-label">Stain Remove</div>
+        </div>
+
+        <div class="service-card" id="svc-blanket" data-name="Blankets" onclick="toggleService('Blankets','🛏️','svc-blanket')">
+          <div class="svc-photo">
+            <div class="skel" id="skel-blanket"></div>
+            <span class="svc-check" id="chk-blanket">✓</span>
+            <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=300&q=80&auto=format&fit=crop"
+                 alt="Blankets" onload="document.getElementById('skel-blanket').style.opacity='0'">
+          </div>
+          <div class="svc-label">Blankets</div>
+        </div>
+
+        <div class="service-card" id="svc-express" data-name="Express" onclick="toggleService('Express','⚡','svc-express')">
+          <div class="svc-photo">
+            <div class="skel" id="skel-express"></div>
+            <span class="svc-check" id="chk-express">✓</span>
+            <img src="https://images.unsplash.com/photo-1567113463300-102a7eb3cb26?w=300&q=80&auto=format&fit=crop"
+                 alt="Express" onload="document.getElementById('skel-express').style.opacity='0'">
+          </div>
+          <div class="svc-label">Express</div>
+        </div>
+
+        <div class="no-results" id="no-results">
+          <div class="no-results-icon">🔎</div>
+          <div class="no-results-text" id="no-results-text">No service found</div>
+          <div class="no-results-sub">Try a different keyword</div>
+        </div>
+
+      </div>
+
+      <!-- ✅ SELECTED SERVICES SUMMARY BOX -->
+      <div class="selected-services-box" id="selected-services-box">
+        <div class="selected-services-header">
+          <div class="selected-services-label">Selected Services</div>
+          <div class="selected-services-count" id="sel-count">0</div>
+        </div>
+        <div class="selected-services-list" id="selected-services-list">
+          <div class="empty-services-hint">Tap a service above to add it ☝️</div>
+        </div>
+        <div class="total-row" id="total-row" style="display:none;">
+          <div class="total-label">Total</div>
+          <div class="total-amount" id="total-amount">₱0</div>
+        </div>
+      </div>
+
+      <div class="section-title">Book Date &amp; Time</div>
+      <div class="date-picker">
+        <button class="arrow" onclick="changeDate(-1)">‹</button>
+        <div class="date-text" id="date-display">—</div>
+        <button class="arrow" onclick="changeDate(1)">›</button>
+      </div>
+      <div class="time-slots">
+        <div class="time-slot" onclick="selectTime(this,'10:00 AM')"><div class="time-label">Drop-off</div><div class="time-value">10:00 AM</div></div>
+        <div class="time-slot" onclick="selectTime(this,'11:00 AM')"><div class="time-label">Pick-up</div><div class="time-value">11:00 AM</div></div>
+        <div class="time-slot" onclick="selectTime(this,'1:00 PM')"><div class="time-label">Drop-off</div><div class="time-value">1:00 PM</div></div>
+        <div class="time-slot" onclick="selectTime(this,'3:00 PM')"><div class="time-label">Pick-up</div><div class="time-value">3:00 PM</div></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="submitBooking()">Book Now</button>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-item active"><span class="nav-icon">🏠</span>Services</button>
+      <button class="nav-item" onclick="location.href='bookings.html'"><span class="nav-icon">📋</span>Bookings</button>
+      <button class="nav-item" id="notif-nav-btn" onclick="location.href='notifications.html'"><span class="nav-icon">🔔</span>Notifs</button>
+      <button class="nav-item" onclick="location.href='profile.html'"><span class="nav-icon">👤</span>Profile</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════ STATE ═══════════════════
+let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+let unreadIds = new Set(JSON.parse(localStorage.getItem('unreadIds')) || []);
+let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+// ✅ Multi-select: Map of name → { name, icon }
+let selectedServices = new Map();
+
+let selTime = null;
+let dateOffset = 0;
+let bannerTimer = null;
+let selectedPayment = null;
+let pendingBookings = [];
+let searchOpen = false;
+
+const prices = {
+  'Wash & Fold':150, 'Dry Cleaning':300, 'Ironing':100,
+  'Stain Removal':500, 'Blankets':200, 'Express':250
+};
+
+if (!currentUser) location.href = 'login.html';
+
+// Pre-select Wash & Fold
+selectedServices.set('Wash & Fold', { name:'Wash & Fold', icon:'🧺' });
+
+// ═══════════════════ DATE / TIME ═══════════════════
+const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtDate(d) { return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; }
+function fmtDateShort(d) { return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`; }
+function fmtTime12(d) { let h=d.getHours(),m=d.getMinutes(),ap=h>=12?'PM':'AM'; h=h%12||12; return `${h}:${String(m).padStart(2,'0')} ${ap}`; }
+function greeting() { const h=new Date().getHours(); return h<12?'morning':h<17?'afternoon':'evening'; }
+function offsetDate(n) { const d=new Date(); d.setDate(d.getDate()+n); return d; }
+function initDate() { document.getElementById('date-display').textContent = fmtDate(offsetDate(dateOffset)); }
+function changeDate(dir) { dateOffset = Math.max(0, dateOffset+dir); initDate(); }
+
+// ═══════════════════ INIT ═══════════════════
+document.getElementById('user-display-name').textContent = currentUser ? currentUser.name.split(' ')[0] : 'User';
+document.getElementById('greeting-part').textContent = greeting();
+initDate();
+refreshBadge();
+renderSelectedServices();
+
+// ═══════════════════ SEARCH ═══════════════════
+function toggleSearch() {
+  searchOpen = !searchOpen;
+  const wrapper = document.getElementById('search-bar-wrapper');
+  const btn = document.getElementById('search-toggle-btn');
+  const input = document.getElementById('search-input');
+  if (searchOpen) {
+    wrapper.classList.add('open'); btn.classList.add('active'); btn.textContent = '✕';
+    setTimeout(() => input.focus(), 200);
+  } else {
+    wrapper.classList.remove('open'); btn.classList.remove('active'); btn.textContent = '🔍';
+    clearSearch();
+  }
+}
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  filterServices('');
+  document.getElementById('search-clear-btn').classList.remove('visible');
+}
+function filterServices(query) {
+  const q = query.trim().toLowerCase();
+  const cards = document.querySelectorAll('.service-card[data-name]');
+  const clearBtn = document.getElementById('search-clear-btn');
+  const countEl = document.getElementById('search-count');
+  const noResults = document.getElementById('no-results');
+  clearBtn.classList.toggle('visible', q.length > 0);
+  let visibleCount = 0;
+  cards.forEach(card => {
+    const name = card.getAttribute('data-name').toLowerCase();
+    const label = card.querySelector('.svc-label');
+    const originalName = card.getAttribute('data-name');
+    if (q === '' || name.includes(q)) {
+      card.classList.remove('hidden'); visibleCount++;
+      if (q && name.includes(q)) {
+        const regex = new RegExp(`(${escapeRegex(q)})`, 'gi');
+        label.innerHTML = originalName.replace(regex, '<mark>$1</mark>');
+      } else {
+        label.textContent = originalName === 'Stain Removal' ? 'Stain Remove' : originalName;
+      }
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+  if (q && visibleCount === 0) {
+    noResults.classList.add('show');
+    document.getElementById('no-results-text').textContent = `No results for "${query}"`;
+  } else { noResults.classList.remove('show'); }
+  if (q && visibleCount > 0) {
+    countEl.textContent = `${visibleCount} service${visibleCount > 1 ? 's' : ''} found`;
+    countEl.classList.add('show');
+  } else { countEl.classList.remove('show'); }
+}
+function escapeRegex(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && searchOpen) toggleSearch(); });
+
+// ═══════════════════ TOAST ═══════════════════
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.textContent = msg; t.className = 'toast' + (type ? ` toast-${type}` : '');
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════ BANNER ═══════════════════
+function showBanner(booking) {
+  const banner = document.getElementById('status-banner');
+  const isDone = booking.status === 'done';
+  document.getElementById('banner-icon').textContent  = isDone ? '✅' : '🔄';
+  document.getElementById('banner-title').textContent = isDone ? `Booking #${booking.id} is Ready!` : `Booking #${booking.id} is Being Washed`;
+  document.getElementById('banner-sub').textContent   = isDone ? 'Your laundry is done — please pick it up! 🎉' : `Your ${booking.service} is now in process 🧺`;
+  banner.className = 'status-banner ' + (isDone ? 'banner-done' : 'banner-process');
+  banner.classList.add('show');
+  clearTimeout(bannerTimer);
+  bannerTimer = setTimeout(() => closeBanner(), 5000);
+}
+function closeBanner() { document.getElementById('status-banner').classList.remove('show'); }
+
+// ═══════════════════ BADGE ═══════════════════
+function refreshBadge() {
+  if (!currentUser) return;
+  const count = [...unreadIds].filter(id => { const b = bookings.find(x => x.id === id); return b && b.username === currentUser.username; }).length;
+  const btn = document.getElementById('notif-nav-btn');
+  if (!btn) return;
+  const existing = btn.querySelector('.nav-badge');
+  if (existing) existing.remove();
+  if (count > 0) { const badge = document.createElement('span'); badge.className = 'nav-badge'; badge.textContent = count > 9 ? '9+' : count; btn.appendChild(badge); }
+}
+
+// ═══════════════════ MULTI-SELECT SERVICES ═══════════════════
+function toggleService(name, icon, id) {
+  const card = document.getElementById(id);
+
+  if (selectedServices.has(name)) {
+    // Deselect
+    selectedServices.delete(name);
+    card.classList.remove('selected');
+  } else {
+    // Select
+    selectedServices.set(name, { name, icon });
+    card.classList.add('selected');
+  }
+
+  renderSelectedServices();
+}
+
+function removeService(name) {
+  // Find which card matches this name and deselect it
+  const cards = document.querySelectorAll('.service-card[data-name]');
+  cards.forEach(card => {
+    if (card.getAttribute('data-name') === name) {
+      card.classList.remove('selected');
+    }
+  });
+  selectedServices.delete(name);
+  renderSelectedServices();
+}
+
+function renderSelectedServices() {
+  const list = document.getElementById('selected-services-list');
+  const countEl = document.getElementById('sel-count');
+  const totalRow = document.getElementById('total-row');
+  const totalAmountEl = document.getElementById('total-amount');
+
+  countEl.textContent = selectedServices.size;
+
+  if (selectedServices.size === 0) {
+    list.innerHTML = '<div class="empty-services-hint">Tap a service above to add it ☝️</div>';
+    totalRow.style.display = 'none';
+    return;
+  }
+
+  let total = 0;
+  let html = '';
+
+  selectedServices.forEach(({ name, icon }) => {
+    const price = prices[name] || 0;
+    total += price;
+    html += `
+      <div class="selected-service-row">
+        <div class="selected-service-info">
+          <span class="selected-service-icon">${icon}</span>
+          <span class="selected-service-name">${name}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="selected-service-price">₱${price}</span>
+          <button class="remove-service-btn" onclick="removeService('${name}')" title="Remove">✕</button>
+        </div>
+      </div>
+    `;
+  });
+
+  list.innerHTML = html;
+  totalAmountEl.textContent = '₱' + total;
+  totalRow.style.display = 'flex';
+}
+
+function getTotalPrice() {
+  let total = 0;
+  selectedServices.forEach(({ name }) => { total += prices[name] || 0; });
+  return total;
+}
+
+function selectTime(el, time) {
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected'); selTime = time;
+}
+
+// ═══════════════════ PAYMENT MODAL ═══════════════════
+function openPaymentModal() {
+  const total = getTotalPrice();
+  document.getElementById('modal-price').textContent = '₱' + total;
+
+  // Show breakdown in modal
+  let breakdown = [];
+  selectedServices.forEach(({ name, icon }) => {
+    breakdown.push(`${icon} ${name}: ₱${prices[name]||0}`);
+  });
+  document.getElementById('modal-breakdown').textContent = breakdown.join('  •  ');
+
+  document.getElementById('payment-modal').classList.add('show');
+  selectedPayment = null;
+  updatePaymentUI();
+}
+function closePaymentModal() {
+  document.getElementById('payment-modal').classList.remove('show');
+  document.getElementById('gcash-details').classList.remove('show');
+  selectedPayment = null; pendingBookings = [];
+}
+function selectPayment(method) {
+  selectedPayment = method; updatePaymentUI();
+  const gd = document.getElementById('gcash-details');
+  method === 'gcash' ? gd.classList.add('show') : gd.classList.remove('show');
+}
+function updatePaymentUI() {
+  document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+  if (selectedPayment === 'cash') document.getElementById('pay-cash').classList.add('selected');
+  else if (selectedPayment === 'gcash') document.getElementById('pay-gcash').classList.add('selected');
+}
+function confirmPayment() {
+  if (!selectedPayment) { showToast('Please select payment method 💳', 'warn'); return; }
+  if (pendingBookings.length > 0) {
+    pendingBookings.forEach(b => {
+      b.paymentMethod = selectedPayment;
+      b.paymentStatus = selectedPayment === 'cash' ? 'pending' : 'paid';
+      bookings.unshift(b);
+    });
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+
+    const count = pendingBookings.length;
+    showToast(`${count} booking${count>1?'s':''} confirmed! ✅`);
+    closePaymentModal();
+    setTimeout(() => { location.href = 'bookings.html'; }, 800);
+  }
+}
+
+// ═══════════════════ SUBMIT BOOKING ═══════════════════
+function genId() { return Math.floor(1000+Math.random()*9000); }
+function submitBooking() {
+  if (!currentUser) return;
+
+  if (selectedServices.size === 0) {
+    showToast('Please select at least one service 🧺', 'warn'); return;
+  }
+  if (!selTime) {
+    showToast('Please select a time slot ⏰', 'warn'); return;
+  }
+
+  // ✅ Create one booking per selected service
+  pendingBookings = [];
+  selectedServices.forEach(({ name, icon }) => {
+    let id;
+    do { id = genId(); } while (bookings.find(b => b.id === id) || pendingBookings.find(b => b.id === id));
+
+    pendingBookings.push({
+      id,
+      username: currentUser.username,
+      name: currentUser.name,
+      service: name,
+      serviceIcon: icon,
+      date: fmtDateShort(offsetDate(dateOffset)),
+      time: selTime,
+      status: 'pending',
+      bookedAt: fmtTime12(new Date()),
+      price: prices[name] || 0,
+      statusUpdatedAt: null,
+      paymentMethod: null,
+      paymentStatus: null
+    });
+  });
+
+  openPaymentModal();
+}
+</script>
+</body>
+</html>

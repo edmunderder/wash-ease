@@ -1,0 +1,207 @@
+<!-- admin_login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Admin Login - WASH EASE</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --card: #FFFFFF;
+    --primary: #2C4A3E;
+    --primary-light: #3D6B5C;
+    --primary-dark: #1A2E26;
+    --accent: #E8A87C;
+    --accent-hover: #D4956A;
+    --accent2: #D4C5B0;
+    --text: #1A1A1A;
+    --text-muted: #6B7280;
+    --pending: #F59E0B;
+    --process: #3B82F6;
+    --done: #10B981;
+    --danger: #EF4444;
+    --border: #E5DDD0;
+    --shadow: 0 4px 24px rgba(44,74,62,0.10);
+    --shadow-hover: 0 8px 32px rgba(44,74,62,0.18);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: var(--font-body);
+    background: #D8D0C4;
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    height: 100vh;
+    max-height: 844px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .screen { display:flex; flex-direction:column; height:100%; animation: slideIn 0.28s cubic-bezier(0.4,0,0.2,1); }
+
+  @keyframes slideIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  /* HEADER */
+  .header {
+    padding: 16px 20px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: relative; z-index: 10;
+    flex-shrink: 0;
+  }
+  .header-title { font-family:var(--font-display); font-size:20px; color:var(--primary); }
+  .header .back-btn {
+    width:36px; height:36px; border-radius:50%;
+    background:var(--bg); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; color:var(--primary); transition:var(--transition);
+  }
+  .header .back-btn:hover { background:var(--primary); color:#fff; transform:translateX(-2px); box-shadow:0 4px 12px rgba(44,74,62,0.25); }
+  .header .back-btn:active { transform:scale(0.92); }
+
+  /* ADMIN HEADER */
+  .admin-header { background:linear-gradient(135deg, var(--primary-dark), var(--primary)); }
+  .admin-header .header-title { color:#fff; }
+  .admin-header .back-btn { background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.15); }
+  .admin-header .back-btn:hover { background:rgba(255,255,255,0.25); color:#fff; }
+
+  /* SCROLL */
+  .scroll-content { flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; }
+  .scroll-content::-webkit-scrollbar { width:4px; }
+  .scroll-content::-webkit-scrollbar-track { background:transparent; }
+  .scroll-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  /* FORMS */
+  .form-group { margin-bottom:16px; }
+  .form-label { display:block; font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.7px; }
+  .form-input {
+    width:100%; padding:14px 16px;
+    border:1.5px solid var(--border); border-radius:var(--radius-sm);
+    font-family:var(--font-body); font-size:15px;
+    background:var(--bg); color:var(--text); outline:none;
+    transition:var(--transition); -webkit-appearance:none;
+  }
+  .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(44,74,62,0.12); background:#fff; transform:translateY(-1px); }
+  .form-input:hover:not(:focus) { border-color:var(--accent2); }
+
+  /* BUTTONS */
+  .btn {
+    width:100%; padding:15px; border-radius:var(--radius-sm); border:none; cursor:pointer;
+    font-family:var(--font-body); font-size:15px; font-weight:600;
+    transition:var(--transition); letter-spacing:0.3px; position:relative; overflow:hidden;
+  }
+  .btn:active { transform:scale(0.97); }
+  .btn-primary { background:linear-gradient(135deg, var(--primary), var(--primary-light)); color:#fff; box-shadow:0 4px 16px rgba(44,74,62,0.25); }
+  .btn-primary:hover { background:linear-gradient(135deg, var(--primary-dark), var(--primary)); box-shadow:0 8px 24px rgba(44,74,62,0.35); transform:translateY(-2px); }
+  .btn-primary:active { transform:translateY(0) scale(0.97); }
+
+  .forgot-link { font-size:13px; color:var(--primary); font-weight:600; cursor:pointer; transition:var(--transition); display:inline-block; }
+  .forgot-link:hover { color:var(--primary-light); text-decoration:underline; text-underline-offset:2px; }
+  .error-msg { color:var(--danger); font-size:13px; margin-top:8px; text-align:center; display:none; }
+
+  /* TOAST */
+  .toast {
+    position:absolute; bottom:110px; left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--primary); color:#fff; padding:12px 24px;
+    border-radius:30px; font-size:14px; font-weight:600;
+    opacity:0; transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+    white-space:nowrap; pointer-events:none; z-index:100;
+    box-shadow:0 8px 24px rgba(44,74,62,0.3); max-width:330px;
+    text-align:center; white-space:normal;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ====== ADMIN LOGIN ====== -->
+  <div class="screen active" id="screen-admin-login">
+    <div class="header admin-header">
+      <button class="back-btn" onclick="location.href='index.html'">←</button>
+      <div class="header-title">Admin Login</div>
+      <div style="width:36px"></div>
+    </div>
+    <div class="scroll-content">
+      <div style="margin-bottom:28px;animation:fadeUp 0.4s ease;">
+        <div style="font-family:var(--font-display);font-size:26px;color:var(--primary);">Admin Portal 🛡️</div>
+        <div style="font-size:14px;color:var(--text-muted);margin-top:4px;">Authorized access only</div>
+      </div>
+      <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" placeholder="Admin username" id="admin-user"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Admin password" id="admin-pass"></div>
+      <div class="error-msg" id="admin-error">Invalid admin credentials.</div>
+      <div style="text-align:right;margin-bottom:20px;"><span class="forgot-link">Forgot Password?</span></div>
+      <button class="btn btn-primary" onclick="doAdminLogin()">Login</button>
+      <div style="margin-top:16px;text-align:center;font-size:12px;color:var(--text-muted);">Username: <b>admin</b> · Password: <b>admin123</b></div>
+    </div>
+  </div>
+
+</div><!-- end .phone -->
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const ADMIN_CREDS = { username: 'admin', password: 'admin123' };
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ` toast-${type}` : '');
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════
+function doAdminLogin() {
+  const u = document.getElementById('admin-user').value.trim();
+  const p = document.getElementById('admin-pass').value;
+  const err = document.getElementById('admin-error');
+  
+  if (u !== ADMIN_CREDS.username || p !== ADMIN_CREDS.password) { 
+    err.style.display = 'block'; 
+    return; 
+  }
+  
+  err.style.display = 'none';
+  localStorage.setItem('adminLoggedIn', 'true');
+  showToast('Welcome, Admin! 🛡️');
+  setTimeout(() => location.href = 'admin_dashboard.html', 1000);
+}
+</script>
+</body>
+</html> 

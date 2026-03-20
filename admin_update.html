@@ -1,0 +1,323 @@
+<!-- admin_update.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Update Status - WASH EASE</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --card: #FFFFFF;
+    --primary: #2C4A3E;
+    --primary-light: #3D6B5C;
+    --primary-dark: #1A2E26;
+    --accent: #E8A87C;
+    --accent-hover: #D4956A;
+    --accent2: #D4C5B0;
+    --text: #1A1A1A;
+    --text-muted: #6B7280;
+    --pending: #F59E0B;
+    --process: #3B82F6;
+    --done: #10B981;
+    --danger: #EF4444;
+    --border: #E5DDD0;
+    --shadow: 0 4px 24px rgba(44,74,62,0.10);
+    --shadow-hover: 0 8px 32px rgba(44,74,62,0.18);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: var(--font-body);
+    background: #D8D0C4;
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    height: 100vh;
+    max-height: 844px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .screen { display:flex; flex-direction:column; height:100%; animation: slideIn 0.28s cubic-bezier(0.4,0,0.2,1); }
+
+  @keyframes slideIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+
+  /* HEADER */
+  .header {
+    padding: 16px 20px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 10;
+    flex-shrink: 0;
+  }
+  .header-title { font-family:var(--font-display); font-size:20px; color:var(--primary); }
+
+  /* ADMIN HEADER */
+  .admin-header { background:linear-gradient(135deg, var(--primary-dark), var(--primary)); }
+  .admin-header .header-title { color:#fff; }
+  .admin-header .back-btn { background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.15); }
+  .admin-header .back-btn:hover { background:rgba(255,255,255,0.25); color:#fff; }
+
+  /* ADMIN LOGOUT BTN */
+  .admin-logout-btn {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: #FCA5A5;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: var(--transition);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .admin-logout-btn:hover { background: rgba(239,68,68,0.3); border-color: rgba(239,68,68,0.7); color: #fff; transform: translateY(-1px); }
+  .admin-logout-btn:active { transform: scale(0.96); }
+
+  /* SCROLL */
+  .scroll-content { flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; }
+  .scroll-content::-webkit-scrollbar { width:4px; }
+  .scroll-content::-webkit-scrollbar-track { background:transparent; }
+  .scroll-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  /* CARDS */
+  .card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:12px; transition:var(--transition); }
+  .card:hover { box-shadow:var(--shadow-hover); }
+
+  /* BADGES */
+  .badge { display:inline-flex; align-items:center; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; letter-spacing:0.3px; }
+  .badge-pending { background:rgba(245,158,11,0.15); color:var(--pending); }
+  .badge-process { background:rgba(59,130,246,0.15); color:var(--process); }
+  .badge-done { background:rgba(16,185,129,0.15); color:var(--done); }
+
+  /* RADIO BUTTONS */
+  .radio-group { display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; }
+  .radio-btn {
+    display:flex; align-items:center; gap:6px; padding:8px 14px;
+    border-radius:20px; border:1.5px solid var(--border); background:var(--bg);
+    cursor:pointer; font-size:13px; font-weight:600; color:var(--text-muted); transition:var(--transition);
+  }
+  .radio-btn:hover { border-color:var(--accent2); background:var(--card); transform:translateY(-1px); }
+  .radio-btn.sel-pending { border-color:var(--pending); background:rgba(245,158,11,0.1); color:var(--pending); }
+  .radio-btn.sel-process { border-color:var(--process); background:rgba(59,130,246,0.1); color:var(--process); }
+  .radio-btn.sel-done { border-color:var(--done); background:rgba(16,185,129,0.1); color:var(--done); }
+  .radio-circle { width:14px; height:14px; border-radius:50%; border:2px solid currentColor; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .radio-circle.filled::after { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; display:block; }
+
+  /* UPDATE BOOKING CARD */
+  .update-booking-card {
+    background:var(--card); border-radius:var(--radius-sm); padding:16px;
+    margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    border:1.5px solid var(--border);
+  }
+  .update-booking-name { font-size:15px; font-weight:700; }
+  .update-booking-meta { font-size:12px; color:var(--text-muted); }
+  .update-booking-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+
+  /* BUTTONS */
+  .btn {
+    width:100%; padding:15px; border-radius:var(--radius-sm); border:none; cursor:pointer;
+    font-family:var(--font-body); font-size:15px; font-weight:600;
+    transition:var(--transition); letter-spacing:0.3px; position:relative; overflow:hidden;
+  }
+  .btn:active { transform:scale(0.97); }
+  .btn-primary { background:linear-gradient(135deg, var(--primary), var(--primary-light)); color:#fff; box-shadow:0 4px 16px rgba(44,74,62,0.25); }
+  .btn-primary:hover { background:linear-gradient(135deg, var(--primary-dark), var(--primary)); box-shadow:0 8px 24px rgba(44,74,62,0.35); transform:translateY(-2px); }
+  .btn-primary:active { transform:translateY(0) scale(0.97); }
+
+  /* TOAST */
+  .toast {
+    position:absolute; bottom:110px; left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--primary); color:#fff; padding:12px 24px;
+    border-radius:30px; font-size:14px; font-weight:600;
+    opacity:0; transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+    white-space:nowrap; pointer-events:none; z-index:100;
+    box-shadow:0 8px 24px rgba(44,74,62,0.3); max-width:330px;
+    text-align:center; white-space:normal;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.toast-done { background:linear-gradient(135deg, var(--done), #059669); }
+  .toast.toast-process { background:linear-gradient(135deg, var(--process), #2563EB); }
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ====== ADMIN UPDATE STATUS ====== -->
+  <div class="screen active" id="screen-admin-update">
+    <div class="header admin-header">
+      <button class="back-btn" onclick="location.href='admin_bookings.html'">←</button>
+      <div class="header-title">Update Status</div>
+      <button class="admin-logout-btn" onclick="doAdminLogout()">⏻ Sign Out</button>
+    </div>
+    <div class="scroll-content" id="update-status-content"></div>
+  </div>
+
+</div><!-- end .phone -->
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+let unreadIds = new Set(JSON.parse(localStorage.getItem('unreadIds')) || []);
+let pendingStatus = null;
+let curUpdateId = null;
+
+// Check admin auth
+if (!localStorage.getItem('adminLoggedIn')) {
+  location.href = 'admin_login.html';
+}
+
+// Get booking ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const bookingId = parseInt(urlParams.get('id'));
+
+// ═══════════════════════════════════════════════
+// DATE / TIME
+// ═══════════════════════════════════════════════
+function fmtTime(d) { let h=d.getHours(),m=d.getMinutes(),ap=h>=12?'PM':'AM'; h=h%12||12; return `${h}:${String(m).padStart(2,'0')} ${ap}`; }
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ` toast-${type}` : '');
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════
+// STATUS HELPERS
+// ═══════════════════════════════════════════════
+function badge(status) {
+  const map = { pending:'badge-pending', process:'badge-process', done:'badge-done' };
+  const lbl = { pending:'Pending', process:'Washing', done:'Done' };
+  return `<span class="badge ${map[status]||''}">${lbl[status]||status}</span>`;
+}
+
+function statusLabel(s) { return {pending:'Pending',process:'Washing',done:'Done'}[s]||s; }
+
+// ═══════════════════════════════════════════════
+// ADMIN UPDATE STATUS
+// ═══════════════════════════════════════════════
+function openUpdate(id) {
+  curUpdateId = id; 
+  pendingStatus = null;
+  const b = bookings.find(x => x.id === id); 
+  if (!b) return;
+  
+  document.getElementById('update-status-content').innerHTML = `
+    <div style="font-family:var(--font-display);font-size:20px;color:var(--primary);margin-bottom:4px;">Booking #${b.id}</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">👤 ${b.name} · @${b.username} · ${b.serviceIcon} ${b.service}</div>
+    <div class="update-booking-card">
+      <div class="update-booking-header">
+        <div class="update-booking-name">Current: ${statusLabel(b.status)}</div>
+        <span id="live-badge" class="badge badge-${b.status==='pending'?'pending':b.status==='process'?'process':'done'}">${statusLabel(b.status)}</span>
+      </div>
+      <div class="update-booking-meta" style="margin-top:4px;">📅 ${b.date} · ${b.time}</div>
+      <div class="radio-group" id="status-radio" style="margin-top:14px;">
+        <div class="radio-btn ${b.status==='pending'?'sel-pending':''}" onclick="pickStatus('pending',this)">
+          <div class="radio-circle ${b.status==='pending'?'filled':''}"></div>⏳ Pending
+        </div>
+        <div class="radio-btn ${b.status==='process'?'sel-process':''}" onclick="pickStatus('process',this)">
+          <div class="radio-circle ${b.status==='process'?'filled':''}"></div>🔄 Washing
+        </div>
+        <div class="radio-btn ${b.status==='done'?'sel-done':''}" onclick="pickStatus('done',this)">
+          <div class="radio-circle ${b.status==='done'?'filled':''}"></div>✅ Done
+        </div>
+      </div>
+    </div>
+    <div style="background:rgba(44,74,62,0.06);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--primary);">
+      💡 The user will receive a notification when you save.
+    </div>
+    <button class="btn btn-primary" onclick="saveStatus()">Save & Notify User</button>`;
+}
+
+function pickStatus(status, btn) {
+  pendingStatus = status;
+  document.getElementById('status-radio').querySelectorAll('.radio-btn').forEach(b => { 
+    b.className = 'radio-btn'; 
+    b.querySelector('.radio-circle').classList.remove('filled'); 
+  });
+  btn.classList.add(`sel-${status}`); 
+  btn.querySelector('.radio-circle').classList.add('filled');
+  const bdg = document.getElementById('live-badge');
+  bdg.className = `badge badge-${status==='pending'?'pending':status==='process'?'process':'done'}`;
+  bdg.textContent = statusLabel(status);
+}
+
+function saveStatus() {
+  if (pendingStatus === null) { 
+    showToast('Select a status first'); 
+    return; 
+  }
+  
+  const b = bookings.find(x => x.id === curUpdateId); 
+  if (!b) return;
+  
+  const oldStatus = b.status;
+  b.status = pendingStatus;
+  b.statusUpdatedAt = fmtTime(new Date());
+
+  // Notify user
+  if (oldStatus !== pendingStatus && (pendingStatus === 'process' || pendingStatus === 'done')) {
+    unreadIds.add(b.id);
+    localStorage.setItem('unreadIds', JSON.stringify([...unreadIds]));
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+  }
+
+  const msg = pendingStatus === 'done'
+    ? `✅ Marked Done — ${b.name} will be notified to pick up!`
+    : pendingStatus === 'process'
+    ? `🔄 Marked Washing — ${b.name} notified!`
+    : `Saved as Pending.`;
+    
+  showToast(msg, pendingStatus);
+  pendingStatus = null;
+  
+  setTimeout(() => { 
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+    location.href = 'admin_bookings.html'; 
+  }, 900);
+}
+
+function doAdminLogout() {
+  localStorage.removeItem('adminLoggedIn');
+  showToast('Admin signed out.');
+  setTimeout(() => location.href = 'index.html', 900);
+}
+
+// Init
+openUpdate(bookingId);
+</script>
+</body>
+</html>

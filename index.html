@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>WASH EASE - Splash</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --primary: #2C4A3E;
+    --primary-light: #3D6B5C;
+    --primary-dark: #1A2E26;
+    --accent: #E8A87C;
+    --text: #1A1A1A;
+    --text-muted: #6B7280;
+    --danger: #EF4444;
+    --success: #10B981;
+    --radius: 18px;
+    --radius-sm: 10px;
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: var(--font-body);
+    background: #D8D0C4;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    height: 100vh;
+    max-height: 844px;
+    background: linear-gradient(145deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  /* Network Status Bar */
+  .network-status {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 200;
+    transform: translateY(-100%);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .network-status.show {
+    transform: translateY(0);
+  }
+
+  .network-status.online {
+    background: linear-gradient(135deg, var(--success), #059669);
+    color: #fff;
+  }
+
+  .network-status.offline {
+    background: linear-gradient(135deg, var(--danger), #DC2626);
+    color: #fff;
+  }
+
+  .network-icon {
+    font-size: 16px;
+  }
+
+  /* Offline Overlay */
+  .offline-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 46, 38, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 150;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .offline-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .offline-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .offline-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: #fff;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .offline-message {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    max-width: 260px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+
+  .retry-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .retry-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+  }
+
+  .retry-btn:active {
+    transform: scale(0.97);
+  }
+
+  .retry-btn.spinning .retry-icon {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Animated Background Elements */
+  .phone::before { 
+    content:''; 
+    position:absolute; 
+    width:300px; 
+    height:300px; 
+    border-radius:50%; 
+    background:rgba(255,255,255,0.04); 
+    top:-80px; 
+    right:-80px; 
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .phone::after { 
+    content:''; 
+    position:absolute; 
+    width:200px; 
+    height:200px; 
+    border-radius:50%; 
+    background:rgba(232,168,124,0.12); 
+    bottom:80px; 
+    left:-60px; 
+    animation: float 8s ease-in-out infinite reverse;
+  }
+
+  .bubble {
+    position: absolute;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+    animation: float-up 15s infinite;
+  }
+
+  .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; animation-duration: 12s; animation-delay: 0s; }
+  .bubble:nth-child(2) { width: 20px; height: 20px; left: 20%; animation-duration: 10s; animation-delay: 1s; }
+  .bubble:nth-child(3) { width: 50px; height: 50px; left: 70%; animation-duration: 14s; animation-delay: 2s; }
+  .bubble:nth-child(4) { width: 25px; height: 25px; left: 80%; animation-duration: 11s; animation-delay: 0.5s; }
+  .bubble:nth-child(5) { width: 35px; height: 35px; left: 40%; animation-duration: 13s; animation-delay: 3s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
+  }
+
+  @keyframes float-up {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-100px) scale(1); opacity: 0; }
+  }
+
+  @keyframes pulse { 
+    0%,100%{transform:scale(1)} 
+    50%{transform:scale(1.05)} 
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; visibility: hidden; }
+    to { opacity: 1; visibility: visible; }
+  }
+
+  /* Logo Container */
+  .logo-container {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    animation: slideUp 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .splash-logo { 
+    font-size:80px; 
+    animation: pulse 2.5s ease-in-out infinite; 
+    filter:drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+
+  .splash-title { 
+    font-family:var(--font-display); 
+    font-size:42px; 
+    color:#fff; 
+    letter-spacing:-1px; 
+    text-shadow:0 2px 12px rgba(0,0,0,0.2);
+    margin-bottom: 8px;
+    animation: slideUp 0.8s cubic-bezier(0.4,0,0.2,1) 0.1s both;
+  }
+
+  .splash-sub { 
+    font-size:16px; 
+    color:rgba(255,255,255,0.65);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    animation: slideUp 0.8s cubic-bezier(0.4,0,0.2,1) 0.2s both;
+  }
+
+  /* Loading Animation */
+  .loading-container {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    animation: fadeIn 1s ease 0.5s both;
+  }
+
+  .loading-bar {
+    width: 120px;
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #fff, var(--accent));
+    background-size: 200% 100%;
+    width: 0%;
+    border-radius: 3px;
+    animation: loading 2s ease-in-out infinite, shimmer 2s linear infinite;
+  }
+
+  @keyframes loading {
+    0% { width: 0%; opacity: 1; }
+    50% { width: 100%; opacity: 1; }
+    100% { width: 100%; opacity: 0; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* Buttons Container */
+  .splash-btns { 
+    display:flex; 
+    flex-direction:column; 
+    gap:12px; 
+    width:280px; 
+    z-index:10;
+    animation: slideUp 0.8s cubic-bezier(0.4,0,0.2,1) 0.4s both;
+    transition: opacity 0.3s, filter 0.3s;
+  }
+
+  .splash-btns.disabled {
+    opacity: 0.5;
+    filter: grayscale(0.8);
+    pointer-events: none;
+  }
+
+  /* Button Styles */
+  .btn {
+    width:100%; 
+    padding:16px; 
+    border-radius:var(--radius-sm); 
+    border:none; 
+    cursor:pointer;
+    font-family:var(--font-body); 
+    font-size:15px; 
+    font-weight:600;
+    transition:var(--transition); 
+    letter-spacing:0.3px; 
+    position:relative; 
+    overflow:hidden;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn:active { transform:scale(0.97); }
+
+  .btn-splash-outline {
+    background:rgba(255,255,255,0.08); 
+    border:1.5px solid rgba(255,255,255,0.45); 
+    color:#fff;
+  }
+  
+  .btn-splash-outline:hover { 
+    background:rgba(255,255,255,0.18); 
+    border-color:rgba(255,255,255,0.8); 
+    transform:translateY(-2px); 
+    box-shadow:0 8px 24px rgba(0,0,0,0.2); 
+  }
+
+  .btn-splash-filled {
+    background:rgba(255,255,255,0.15); 
+    border:1.5px solid rgba(255,255,255,0.4); 
+    color:#fff;
+  }
+  
+  .btn-splash-filled:hover { 
+    background:rgba(255,255,255,0.28); 
+    transform:translateY(-2px); 
+    box-shadow:0 8px 24px rgba(0,0,0,0.2); 
+  }
+
+  /* Ripple Effect */
+  .btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn:active::after {
+    width: 300px;
+    height: 300px;
+  }
+
+  /* Admin Link */
+  .admin-link { 
+    color:rgba(255,255,255,0.5); 
+    font-size:13px; 
+    cursor:pointer; 
+    transition:var(--transition); 
+    display:inline-block;
+    margin-top: 8px;
+    text-decoration: none;
+    position: relative;
+  }
+  
+  .admin-link:hover { 
+    color:rgba(255,255,255,0.85); 
+    letter-spacing:0.5px; 
+  }
+
+  .admin-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.6);
+    transition: width 0.3s;
+  }
+
+  .admin-link:hover::after {
+    width: 100%;
+  }
+
+  /* Version Tag */
+  .version-tag {
+    position: absolute;
+    bottom: 20px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+    animation: fadeIn 1s ease 1s both;
+  }
+
+  /* Skip Button */
+  .skip-btn {
+    position: absolute;
+    top: 44px;
+    right: 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .skip-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .skip-btn:hover {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  .skip-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* Toast Notification */
+  .toast {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(255,255,255,0.95);
+    color: var(--primary);
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast.error {
+    background: linear-gradient(135deg, var(--danger), #DC2626);
+    color: #fff;
+  }
+
+  .toast.success {
+    background: linear-gradient(135deg, var(--success), #059669);
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- Network Status Bar -->
+  <div class="network-status" id="networkStatus">
+    <span class="network-icon" id="networkIcon">📡</span>
+    <span id="networkText">Checking connection...</span>
+  </div>
+
+  <!-- Offline Overlay -->
+  <div class="offline-overlay" id="offlineOverlay">
+    <div class="offline-icon">📵</div>
+    <h2 class="offline-title">You're Offline</h2>
+    <p class="offline-message">Please check your internet connection to continue using Washease.</p>
+    <button class="retry-btn" id="retryBtn" onclick="checkConnection()">
+      <span class="retry-icon">🔄</span>
+      <span>Try Again</span>
+    </button>
+  </div>
+
+  <!-- Floating Bubbles Background -->
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+
+  <!-- Skip Button -->
+  <button class="skip-btn" id="skipBtn" onclick="skipAnimation()">Skip →</button>
+
+  <!-- Main Content -->
+  <div class="logo-container" id="logoContainer">
+    <div class="splash-logo">🫧</div>
+    <h1 class="splash-title" id="splashTitle">Washease</h1>
+    <p class="splash-sub" id="splashSub">Fresh clothes, delivered fast</p>
+  </div>
+
+  <!-- Loading Animation -->
+  <div class="loading-container" id="loadingContainer">
+    <div class="loading-bar">
+      <div class="loading-progress"></div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="splash-btns" id="splashBtns">
+    <button class="btn btn-splash-outline" onclick="createAccount()" id="createAccountBtn">Create Account</button>
+    <button class="btn btn-splash-filled" onclick="signIn()" id="signInBtn">Sign In</button>
+    <div style="text-align:center;">
+      <span class="admin-link" onclick="adminLogin()" id="adminLink">Admin Login →</span>
+    </div>
+  </div>
+
+  <!-- Version -->
+  <div class="version-tag">v2.0.1</div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// NETWORK STATUS MANAGER
+// ═══════════════════════════════════════════════════════════════════
+
+let isOnline = navigator.onLine;
+let animationSkipped = false;
+let skipBtnShown = false;
+
+// Initialize network monitoring
+function initNetworkMonitor() {
+  updateNetworkStatus(navigator.onLine);
+  
+  // Listen for online/offline events
+  window.addEventListener('online', () => {
+    handleNetworkChange(true);
+  });
+  
+  window.addEventListener('offline', () => {
+    handleNetworkChange(false);
+  });
+  
+  // Periodic connection check (every 5 seconds)
+  setInterval(() => {
+    verifyActualConnection();
+  }, 5000);
+}
+
+// Handle network status changes
+function handleNetworkChange(online) {
+  isOnline = online;
+  updateNetworkStatus(online);
+  
+  if (online) {
+    showToast('Back online!', 'success');
+    hideOfflineOverlay();
+    enableButtons();
+  } else {
+    showToast('Connection lost', 'error');
+    showOfflineOverlay();
+    disableButtons();
+  }
+}
+
+// Update UI based on network status
+function updateNetworkStatus(online) {
+  const statusBar = document.getElementById('networkStatus');
+  const icon = document.getElementById('networkIcon');
+  const text = document.getElementById('networkText');
+  
+  if (online) {
+    statusBar.className = 'network-status online show';
+    icon.textContent = '✅';
+    text.textContent = 'Online';
+    
+    // Hide status bar after 2 seconds
+    setTimeout(() => {
+      statusBar.classList.remove('show');
+    }, 2000);
+  } else {
+    statusBar.className = 'network-status offline show';
+    icon.textContent = '⚠️';
+    text.textContent = 'Offline - Check connection';
+  }
+}
+
+// Verify actual internet connection (not just browser status)
+async function verifyActualConnection() {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    
+    // Try to fetch a small resource (Google favicon or your own endpoint)
+    const response = await fetch('https://www.google.com/favicon.ico', {
+      method: 'HEAD',
+      mode: 'no-cors',
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!isOnline) {
+      handleNetworkChange(true);
+    }
+  } catch (error) {
+    if (isOnline) {
+      handleNetworkChange(false);
+    }
+  }
+}
+
+// Manual connection check
+async function checkConnection() {
+  const retryBtn = document.getElementById('retryBtn');
+  retryBtn.classList.add('spinning');
+  
+  showToast('Checking connection...');
+  
+  try {
+    await verifyActualConnection();
+    
+    setTimeout(() => {
+      retryBtn.classList.remove('spinning');
+      if (isOnline) {
+        showToast('Connected!', 'success');
+      } else {
+        showToast('Still offline', 'error');
+      }
+    }, 1500);
+  } catch (e) {
+    retryBtn.classList.remove('spinning');
+    showToast('No connection found', 'error');
+  }
+}
+
+// Show/hide offline overlay
+function showOfflineOverlay() {
+  document.getElementById('offlineOverlay').classList.add('show');
+}
+
+function hideOfflineOverlay() {
+  document.getElementById('offlineOverlay').classList.remove('show');
+}
+
+// Enable/disable buttons
+function disableButtons() {
+  document.getElementById('splashBtns').classList.add('disabled');
+}
+
+function enableButtons() {
+  document.getElementById('splashBtns').classList.remove('disabled');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SPLASH SCREEN FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════
+
+// Show skip button after 2 seconds
+setTimeout(() => {
+  if (!animationSkipped && !skipBtnShown && isOnline) {
+    const skipBtn = document.getElementById('skipBtn');
+    skipBtn.classList.add('visible');
+    skipBtnShown = true;
+  }
+}, 2000);
+
+function skipAnimation() {
+  if (animationSkipped) return;
+  animationSkipped = true;
+  
+  const skipBtn = document.getElementById('skipBtn');
+  skipBtn.style.opacity = '0';
+  skipBtn.style.pointerEvents = 'none';
+  
+  const elements = [
+    document.getElementById('logoContainer'),
+    document.getElementById('splashTitle'),
+    document.getElementById('splashSub'),
+    document.getElementById('splashBtns')
+  ];
+  
+  elements.forEach(el => {
+    if (el) {
+      el.style.animation = 'none';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }
+  });
+  
+  const loadingContainer = document.getElementById('loadingContainer');
+  if (loadingContainer) {
+    loadingContainer.style.display = 'none';
+  }
+  
+  showToast('Animations skipped');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NAVIGATION FUNCTIONS (with online check)
+// ═══════════════════════════════════════════════════════════════════
+
+function createAccount() {
+  if (!checkOnline()) return;
+  
+  showToast('Redirecting to registration...');
+  setTimeout(() => {
+    window.location.href = 'register.html';
+  }, 800);
+}
+
+function signIn() {
+  if (!checkOnline()) return;
+  
+  showToast('Opening login...');
+  setTimeout(() => {
+    window.location.href = 'login.html';
+  }, 800);
+}
+
+function adminLogin() {
+  if (!checkOnline()) return;
+  
+  showToast('Admin access...');
+  setTimeout(() => {
+    window.location.href = 'admin_login.html';
+  }, 800);
+}
+
+// Check if online before allowing action
+function checkOnline() {
+  if (!isOnline) {
+    showToast('No internet connection', 'error');
+    showOfflineOverlay();
+    return false;
+  }
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOAST NOTIFICATION
+// ═══════════════════════════════════════════════════════════════════
+
+function showToast(message, type = '') {
+  const toast = document.getElementById('toast');
+  const existing = document.querySelector('.toast.show');
+  
+  if (existing) {
+    existing.classList.remove('show');
+  }
+  
+  toast.textContent = message;
+  toast.className = 'toast' + (type ? ' ' + type : '');
+  
+  // Force reflow
+  void toast.offsetWidth;
+  
+  requestAnimationFrame(() => {
+    toast.classList.add('show');
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2500);
+}
+
+// Auto-hide loading after animation
+setTimeout(() => {
+  if (!animationSkipped) {
+    const loadingContainer = document.getElementById('loadingContainer');
+    if (loadingContainer) {
+      loadingContainer.style.opacity = '0';
+      loadingContainer.style.transition = 'opacity 0.5s';
+      setTimeout(() => {
+        loadingContainer.style.display = 'none';
+      }, 500);
+    }
+  }
+}, 2500);
+
+// ═══════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', () => {
+  initNetworkMonitor();
+  
+  // Check initial connection
+  if (!isOnline) {
+    showOfflineOverlay();
+    disableButtons();
+  }
+});
+
+// Preload next pages
+window.addEventListener('load', () => {
+  if (isOnline) {
+    const preloadLinks = ['register.html', 'login.html'];
+    preloadLinks.forEach(href => {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = href;
+      document.head.appendChild(link);
+    });
+  }
+});
+</script>
+</body>
+</html>

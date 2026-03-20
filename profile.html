@@ -1,0 +1,566 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2C4A3E">
+<title>Profile - WASH EASE</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8; --card: #FFFFFF; --primary: #2C4A3E; --primary-light: #3D6B5C;
+    --primary-dark: #1A2E26; --accent: #E8A87C; --text: #1A1A1A; --text-muted: #6B7280;
+    --done: #10B981; --danger: #EF4444; --border: #E5DDD0;
+    --shadow: 0 4px 24px rgba(44,74,62,0.10); --shadow-hover: 0 8px 32px rgba(44,74,62,0.18);
+    --radius: 18px; --radius-sm: 10px;
+    --font-display: 'DM Serif Display', serif; --font-body: 'DM Sans', sans-serif;
+    --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .dark-mode {
+    --bg: #0F1A16; --card: #1A2820; --primary: #4CAF85; --primary-light: #5DBF96;
+    --primary-dark: #3A8F6A; --text: #F0EDE8; --text-muted: #9BA8A0; --border: #2A3D34;
+    --shadow: 0 4px 24px rgba(0,0,0,0.35); --shadow-hover: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .dark-mode body { background: #060E0A; }
+  .dark-mode .phone { box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
+  .dark-mode .toggle-track { background: #2A3D34; }
+  .dark-mode .edit-field-input { background: #1A2820; color: var(--text); border-color: #2A3D34; }
+  .dark-mode .val-badge { background: rgba(76,175,133,0.15); color: var(--primary); }
+  .dark-mode .settings-row:active { background: rgba(76,175,133,0.08); }
+  .phone, .phone * { transition-property: background-color, color, border-color, box-shadow; transition-duration: 0.35s; transition-timing-function: ease; }
+  .screen, .about-modal, .settings-panel, .edit-modal, .toast, .settings-overlay { transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:var(--font-body); background:#D8D0C4; color:var(--text); height:100vh; overflow:hidden; display:flex; justify-content:center; align-items:center; -webkit-font-smoothing:antialiased; }
+  .phone { width:100%; max-width:390px; height:100vh; max-height:844px; background:var(--bg); position:relative; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+  .screen { display:flex; flex-direction:column; height:100%; animation:slideIn 0.28s cubic-bezier(0.4,0,0.2,1); }
+  @keyframes slideIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:0.5} 50%{transform:scale(1.1);opacity:0.8} }
+  @keyframes float { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-10px)} }
+  .header { padding:16px 20px 12px; display:flex; align-items:center; justify-content:space-between; position:relative; z-index:10; flex-shrink:0; }
+  .header-title { font-family:var(--font-display); font-size:20px; color:#fff; }
+  .header-icon { width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.15); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff; transition:var(--transition); user-select:none; }
+  .header-icon:active { transform:scale(0.92); }
+  .header-icon:hover { background:rgba(255,255,255,0.28); transform:rotate(30deg) scale(1.1); }
+  .scroll-content { flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; }
+  .scroll-content::-webkit-scrollbar { width:4px; }
+  .scroll-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .bottom-nav { display:flex; background:var(--card); border-top:1px solid var(--border); padding:8px 0 16px; flex-shrink:0; }
+  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 0; cursor:pointer; border:none; background:none; color:var(--text-muted); font-family:var(--font-body); font-size:11px; font-weight:500; transition:var(--transition); border-radius:var(--radius-sm); margin:0 4px; min-height:44px; user-select:none; }
+  .nav-item:active { transform:scale(0.92); }
+  .nav-item:hover { color:var(--primary); background:rgba(44,74,62,0.06); transform:translateY(-2px); }
+  .nav-item.active { color:var(--primary); }
+  .nav-item.active .nav-icon { transform:scale(1.15); filter:drop-shadow(0 2px 4px rgba(44,74,62,0.2)); }
+  .nav-icon { font-size:22px; transition:var(--transition); }
+  .btn { width:100%; padding:16px; border-radius:var(--radius-sm); border:none; cursor:pointer; font-family:var(--font-body); font-size:16px; font-weight:600; transition:var(--transition); min-height:48px; user-select:none; }
+  .btn:active { transform:scale(0.96); }
+  .btn-danger { background:transparent; border:1.5px solid var(--danger); color:var(--danger); }
+  .btn-danger:active { background:var(--danger); color:#fff; }
+  .btn-danger:hover { background:var(--danger); color:#fff; box-shadow:0 6px 20px rgba(239,68,68,0.3); transform:translateY(-2px); }
+  .card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:12px; transition:var(--transition); }
+  .card:hover { box-shadow:var(--shadow-hover); }
+  .profile-avatar { width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:#fff; font-size:36px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; box-shadow:0 8px 24px rgba(44,74,62,0.3); transition:var(--transition); cursor:pointer; user-select:none; }
+  .profile-avatar:active { transform:scale(0.95); }
+  .profile-avatar:hover { transform:scale(1.08) rotate(5deg); box-shadow:0 12px 32px rgba(44,74,62,0.4); }
+  .profile-menu-item { display:flex; align-items:center; justify-content:space-between; padding:16px 4px; border-bottom:1px solid var(--border); cursor:pointer; transition:var(--transition); border-radius:6px; min-height:48px; user-select:none; }
+  .profile-menu-item:last-child { border-bottom:none; }
+  .profile-menu-item:active { background:rgba(44,74,62,0.08); transform:scale(0.98); }
+  .profile-menu-item:hover { background:rgba(44,74,62,0.04); padding-left:10px; }
+  .profile-menu-item:hover .profile-arrow { transform:translateX(4px); color:var(--primary); }
+  .profile-arrow { color:var(--text-muted); transition:var(--transition); font-size:20px; }
+  .about-me-header-row { display:flex; align-items:center; justify-content:space-between; cursor:pointer; padding:4px; border-radius:8px; transition:var(--transition); user-select:none; }
+  .about-me-left { display:flex; align-items:center; gap:12px; }
+  /* ✅ avatar — src set purely by JS, fallback bg if image fails */
+  .about-me-avatar { width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); box-shadow:0 2px 8px rgba(44,74,62,0.2); pointer-events:none; background:linear-gradient(135deg,var(--primary),var(--accent)); }
+  .about-me-title-group { display:flex; flex-direction:column; }
+  .about-me-name { font-family:var(--font-display); font-size:18px; color:var(--primary); font-weight:600; }
+  .about-me-role { font-size:12px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+  .about-me-toggle { font-size:24px; color:var(--primary); transition:var(--transition); transform:rotate(-90deg); padding:8px; }
+  /* ── ABOUT MODAL ── */
+  .about-modal { position:absolute; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:500; display:flex; flex-direction:column; opacity:0; pointer-events:none; transform:scale(0.95); transition:all 0.4s cubic-bezier(0.4,0,0.2,1); will-change:transform,opacity; }
+  .about-modal.active { opacity:1; pointer-events:all; transform:scale(1); }
+  .about-modal-header { padding:16px 20px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(135deg,var(--primary-dark),var(--primary)); flex-shrink:0; min-height:56px; }
+  .about-modal-back { width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.15); border:none; color:#fff; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); user-select:none; }
+  .about-modal-back:active { transform:scale(0.92); }
+  .about-modal-back:hover { background:rgba(255,255,255,0.25); transform:translateX(-3px); }
+  .about-modal-title { font-family:var(--font-display); font-size:20px; color:#fff; }
+  .about-modal-content { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; }
+  .about-hero { background:linear-gradient(135deg,var(--primary-dark),var(--primary)); padding:40px 24px 60px; text-align:center; position:relative; overflow:hidden; }
+  .about-hero::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%); animation:pulse 4s ease-in-out infinite; }
+  /* ✅ hero avatar — src set by JS, fallback bg */
+  .about-hero-avatar { width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid rgba(255,255,255,0.3); box-shadow:0 12px 40px rgba(0,0,0,0.3); margin-bottom:20px; position:relative; z-index:1; animation:float 3s ease-in-out infinite; pointer-events:none; background:linear-gradient(135deg,var(--primary-light),var(--accent)); }
+  .about-hero-name { font-family:var(--font-display); font-size:28px; color:#fff; margin-bottom:8px; position:relative; z-index:1; text-shadow:0 2px 10px rgba(0,0,0,0.2); line-height:1.2; }
+  .about-hero-role { font-size:13px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:2px; position:relative; z-index:1; background:rgba(255,255,255,0.1); padding:6px 16px; border-radius:20px; display:inline-block; }
+  .about-body { background:var(--bg); border-radius:24px 24px 0 0; margin-top:-30px; position:relative; z-index:2; padding:30px 20px 40px; }
+  .about-section { margin-bottom:28px; }
+  .about-section-title { font-family:var(--font-display); font-size:18px; color:var(--primary); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .about-bio-full { font-size:15px; line-height:1.8; color:var(--text-muted); background:var(--card); padding:20px; border-radius:var(--radius); box-shadow:var(--shadow); border-left:4px solid var(--accent); }
+  .about-skills-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .about-skill-item { background:var(--card); padding:14px 12px; border-radius:var(--radius-sm); display:flex; align-items:center; gap:10px; box-shadow:var(--shadow); transition:var(--transition); border:2px solid transparent; user-select:none; }
+  .about-skill-item:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); border-color:var(--accent); }
+  .about-skill-icon { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .about-skill-info { display:flex; flex-direction:column; }
+  .about-skill-name { font-weight:600; font-size:14px; color:var(--primary); }
+  .about-skill-level { font-size:12px; color:var(--text-muted); }
+  .about-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .about-stat { background:var(--card); padding:16px 8px; border-radius:var(--radius-sm); text-align:center; box-shadow:var(--shadow); transition:var(--transition); user-select:none; }
+  .about-stat:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+  .about-stat-number { font-family:var(--font-display); font-size:24px; color:var(--primary); font-weight:700; }
+  .about-stat-label { font-size:10px; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.5px; }
+  .about-contact { background:linear-gradient(135deg,var(--primary),var(--primary-light)); padding:20px; border-radius:var(--radius); text-align:center; color:#fff; }
+  .about-contact-text { font-size:14px; margin-bottom:12px; opacity:0.9; }
+  .about-contact-btn { background:#fff; color:var(--primary); border:none; padding:14px 32px; border-radius:25px; font-family:var(--font-body); font-size:15px; font-weight:600; cursor:pointer; transition:var(--transition); box-shadow:0 4px 15px rgba(0,0,0,0.2); min-height:48px; }
+  .about-contact-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.3); }
+  /* ── SETTINGS ── */
+  .settings-overlay { position:absolute; inset:0; background:rgba(0,0,0,0); z-index:800; pointer-events:none; transition:background 0.32s ease; }
+  .settings-overlay.show { background:rgba(0,0,0,0.45); pointer-events:all; }
+  .settings-panel { position:absolute; top:0; right:0; width:88%; max-width:340px; height:100%; background:var(--bg); z-index:900; display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); box-shadow:-8px 0 40px rgba(0,0,0,0.18); border-radius:20px 0 0 20px; overflow:hidden; }
+  .settings-panel.show { transform:translateX(0); }
+  .settings-header { background:linear-gradient(135deg,var(--primary-dark),var(--primary)); padding:20px 20px 18px; display:flex; align-items:center; gap:14px; flex-shrink:0; }
+  .settings-back { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.15); border:none; color:#fff; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); user-select:none; flex-shrink:0; }
+  .settings-back:active { transform:scale(0.92); }
+  .settings-back:hover { background:rgba(255,255,255,0.25); transform:translateX(-3px); }
+  .settings-header-text { flex:1; }
+  .settings-title { font-family:var(--font-display); font-size:20px; color:#fff; }
+  .settings-subtitle { font-size:12px; color:rgba(255,255,255,0.65); margin-top:2px; }
+  .settings-scroll { flex:1; overflow-y:auto; padding:16px; -webkit-overflow-scrolling:touch; }
+  .settings-scroll::-webkit-scrollbar { width:4px; }
+  .settings-scroll::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .settings-section-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; padding:16px 4px 8px; }
+  .settings-section-label:first-child { padding-top:4px; }
+  .settings-row { display:flex; align-items:center; gap:14px; padding:14px 12px; background:var(--card); border-radius:var(--radius-sm); margin-bottom:8px; cursor:pointer; transition:var(--transition); user-select:none; border:1.5px solid transparent; }
+  .settings-row:active { transform:scale(0.98); }
+  .settings-row:hover { border-color:rgba(44,74,62,0.15); box-shadow:0 2px 12px rgba(44,74,62,0.08); transform:translateY(-1px); }
+  .settings-row-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .icon-green  { background:linear-gradient(135deg,#10B981,#059669); }
+  .icon-blue   { background:linear-gradient(135deg,#3B82F6,#2563EB); }
+  .icon-orange { background:linear-gradient(135deg,#F59E0B,#D97706); }
+  .icon-purple { background:linear-gradient(135deg,#8B5CF6,#7C3AED); }
+  .icon-red    { background:linear-gradient(135deg,#EF4444,#DC2626); }
+  .icon-teal   { background:linear-gradient(135deg,#14B8A6,#0D9488); }
+  .icon-gray   { background:linear-gradient(135deg,#6B7280,#4B5563); }
+  .icon-primary { background:linear-gradient(135deg,var(--primary),var(--primary-light)); }
+  .settings-row-body { flex:1; min-width:0; }
+  .settings-row-title { font-size:14px; font-weight:600; color:var(--text); }
+  .settings-row-sub { font-size:12px; color:var(--text-muted); margin-top:2px; }
+  .settings-row-right { flex-shrink:0; display:flex; align-items:center; gap:6px; }
+  .settings-arrow { color:var(--text-muted); font-size:16px; transition:var(--transition); }
+  .settings-row:hover .settings-arrow { transform:translateX(3px); color:var(--primary); }
+  .toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
+  .toggle input { opacity:0; width:0; height:0; position:absolute; }
+  .toggle-track { position:absolute; inset:0; background:#CBD5E1; border-radius:24px; cursor:pointer; transition:background 0.25s ease; }
+  .toggle-track::after { content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.18); transition:transform 0.25s cubic-bezier(0.4,0,0.2,1); }
+  .toggle input:checked ~ .toggle-track { background:var(--primary); }
+  .toggle input:checked ~ .toggle-track::after { transform:translateX(20px); }
+  .val-badge { font-size:12px; font-weight:600; color:var(--primary); background:rgba(44,74,62,0.1); padding:4px 10px; border-radius:20px; }
+  .settings-row.danger .settings-row-title { color:var(--danger); }
+  .settings-row.danger .settings-row-icon { background:linear-gradient(135deg,#EF4444,#DC2626); }
+  .settings-row.danger:hover { border-color:rgba(239,68,68,0.3); }
+  .settings-version { text-align:center; font-size:11px; color:var(--text-muted); padding:20px 0 8px; opacity:0.6; }
+  /* ── EDIT MODAL ── */
+  .edit-modal { position:absolute; inset:0; z-index:950; display:flex; flex-direction:column; opacity:0; pointer-events:none; transform:translateY(100%); transition:all 0.35s cubic-bezier(0.4,0,0.2,1); background:var(--bg); }
+  .edit-modal.show { opacity:1; pointer-events:all; transform:translateY(0); }
+  .edit-modal-header { background:linear-gradient(135deg,var(--primary-dark),var(--primary)); padding:18px 20px; display:flex; align-items:center; gap:14px; flex-shrink:0; }
+  .edit-modal-header button { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.15); border:none; color:#fff; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+  .edit-modal-title { font-family:var(--font-display); font-size:20px; color:#fff; flex:1; }
+  .edit-modal-body { flex:1; overflow-y:auto; padding:24px 20px; }
+  .edit-field-group { margin-bottom:20px; }
+  .edit-field-label { font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; display:block; }
+  .edit-field-input { width:100%; padding:14px 16px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--card); font-family:var(--font-body); font-size:15px; color:var(--text); outline:none; transition:border-color 0.2s,box-shadow 0.2s; }
+  .edit-field-input:focus { border-color:var(--primary-light); box-shadow:0 0 0 3px rgba(44,74,62,0.1); }
+  .edit-field-input::placeholder { color:var(--text-muted); }
+  .edit-save-btn { width:100%; padding:16px; border-radius:var(--radius-sm); border:none; background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:#fff; font-family:var(--font-body); font-size:16px; font-weight:600; cursor:pointer; transition:var(--transition); margin-top:8px; box-shadow:0 4px 16px rgba(44,74,62,0.25); }
+  .edit-save-btn:active { transform:scale(0.97); }
+  .edit-save-btn:hover { box-shadow:0 8px 24px rgba(44,74,62,0.35); transform:translateY(-2px); }
+  /* ── TOAST ── */
+  .toast { position:absolute; bottom:110px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--primary); color:#fff; padding:14px 24px; border-radius:30px; font-size:15px; font-weight:600; opacity:0; transition:all 0.3s cubic-bezier(0.4,0,0.2,1); pointer-events:none; z-index:9999; box-shadow:0 8px 24px rgba(44,74,62,0.3); max-width:320px; text-align:center; will-change:transform,opacity; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.toast-success { background:linear-gradient(135deg,var(--done),#059669); }
+  .toast.toast-warn { background:linear-gradient(135deg,#F59E0B,#D97706); }
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+  <div class="toast" id="toast"></div>
+
+  <!-- ══════════════ PROFILE SCREEN ══════════════ -->
+  <div class="screen active" id="screen-profile">
+    <div class="header" style="background:linear-gradient(135deg,var(--primary-dark),var(--primary));">
+      <div style="width:44px"></div>
+      <div class="header-title">Profile</div>
+      <button class="header-icon" onclick="openSettings()" title="Settings" id="settings-btn">⚙️</button>
+    </div>
+    <div class="scroll-content">
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;">
+        <div class="profile-avatar">👤</div>
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--primary);" id="profile-name">User</div>
+        <div style="font-size:14px;color:var(--text-muted);" id="profile-email">—</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:4px;color:var(--primary);">Account</div>
+        <div class="profile-menu-item" style="flex-direction:column;align-items:stretch;padding:12px 4px;" onclick="openAboutModal()">
+          <div class="about-me-header-row">
+            <div class="about-me-left">
+              <!-- ✅ FIXED: Clean img tag — no src in HTML, set by JS only -->
+              <img id="about-avatar" class="about-me-avatar" alt="Developer">
+              <div class="about-me-title-group">
+                <span class="about-me-name">About Me</span>
+                <span class="about-me-role" id="about-role">Developer</span>
+              </div>
+            </div>
+            <span class="about-me-toggle" id="about-toggle">▾</span>
+          </div>
+        </div>
+        <div class="profile-menu-item" onclick="location.href='bookings.html'">
+          <span style="font-size:16px;">📋 My Bookings</span>
+          <span class="profile-arrow">›</span>
+        </div>
+        <div class="profile-menu-item" onclick="showToast('Payment Methods coming soon!')">
+          <span style="font-size:16px;">💳 Payment Methods</span>
+          <span class="profile-arrow">›</span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:4px;">Preferences</div>
+        <div class="profile-menu-item" onclick="location.href='notifications.html'">
+          <span style="font-size:16px;">🔔 Notifications</span>
+          <span class="profile-arrow">›</span>
+        </div>
+      </div>
+      <button class="btn btn-danger" onclick="doLogout()">Sign Out</button>
+    </div>
+    <div class="bottom-nav">
+      <button class="nav-item" onclick="location.href='services.html'"><span class="nav-icon">🏠</span>Services</button>
+      <button class="nav-item" onclick="location.href='bookings.html'"><span class="nav-icon">📋</span>Bookings</button>
+      <button class="nav-item" onclick="location.href='notifications.html'"><span class="nav-icon">🔔</span>Notifs</button>
+      <button class="nav-item active"><span class="nav-icon">👤</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ ABOUT ME MODAL ══════════════ -->
+  <div class="about-modal" id="aboutModal">
+    <div class="about-modal-header">
+      <button class="about-modal-back" onclick="closeAboutModal()">←</button>
+      <div class="about-modal-title">About Me</div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="about-modal-content" id="modalScroll">
+      <div class="about-hero">
+        <!-- ✅ FIXED: Clean img tag — src set by JS only -->
+        <img id="modal-avatar" class="about-hero-avatar" alt="Developer">
+        <div class="about-hero-name" id="modal-name">Edmund</div>
+        <div class="about-hero-role" id="modal-role">Developer</div>
+      </div>
+      <div class="about-body">
+        <div class="about-section">
+          <div class="about-section-title">👋 Bio</div>
+          <div class="about-bio-full" id="modal-bio">BSIT Students.</div>
+        </div>
+        <div class="about-section">
+          <div class="about-section-title">📊 Stats</div>
+          <div class="about-stats">
+            <div class="about-stat"><div class="about-stat-number">50+</div><div class="about-stat-label">Projects</div></div>
+            <div class="about-stat"><div class="about-stat-number">3+</div><div class="about-stat-label">Years Exp</div></div>
+            <div class="about-stat"><div class="about-stat-number">100%</div><div class="about-stat-label">Passion</div></div>
+          </div>
+        </div>
+        <div class="about-section">
+          <div class="about-section-title">🛠️ Skills</div>
+          <div class="about-skills-grid" id="modal-skills"></div>
+        </div>
+        <div class="about-contact">
+          <div class="about-contact-text">Interested in working together?</div>
+          <button class="about-contact-btn" onclick="showToast('Opening contact… 📧');closeAboutModal();">Get In Touch</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ SETTINGS ══════════════ -->
+  <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+  <div class="settings-panel" id="settings-panel">
+    <div class="settings-header">
+      <button class="settings-back" onclick="closeSettings()">←</button>
+      <div class="settings-header-text">
+        <div class="settings-title">Settings</div>
+        <div class="settings-subtitle">Manage your preferences</div>
+      </div>
+      <span style="font-size:22px;">⚙️</span>
+    </div>
+    <div class="settings-scroll">
+      <div class="settings-section-label">Account</div>
+      <div class="settings-row" onclick="openEditProfile()">
+        <div class="settings-row-icon icon-primary">✏️</div>
+        <div class="settings-row-body"><div class="settings-row-title">Edit Profile</div><div class="settings-row-sub">Update your name &amp; email</div></div>
+        <div class="settings-row-right"><span class="settings-arrow">›</span></div>
+      </div>
+      <div class="settings-row" onclick="showToast('Change Password coming soon! 🔑')">
+        <div class="settings-row-icon icon-blue">🔒</div>
+        <div class="settings-row-body"><div class="settings-row-title">Change Password</div><div class="settings-row-sub">Update your password</div></div>
+        <div class="settings-row-right"><span class="settings-arrow">›</span></div>
+      </div>
+      <div class="settings-section-label">Notifications</div>
+      <div class="settings-row" onclick="togglePref('notif_booking')">
+        <div class="settings-row-icon icon-orange">🔔</div>
+        <div class="settings-row-body"><div class="settings-row-title">Booking Alerts</div><div class="settings-row-sub">Updates on your laundry status</div></div>
+        <div class="settings-row-right"><label class="toggle" onclick="event.stopPropagation()"><input type="checkbox" id="toggle-notif_booking" checked onchange="onToggleChange('notif_booking',this.checked)"><span class="toggle-track"></span></label></div>
+      </div>
+      <div class="settings-row" onclick="togglePref('notif_promo')">
+        <div class="settings-row-icon icon-green">🎉</div>
+        <div class="settings-row-body"><div class="settings-row-title">Promotions</div><div class="settings-row-sub">Deals and special offers</div></div>
+        <div class="settings-row-right"><label class="toggle" onclick="event.stopPropagation()"><input type="checkbox" id="toggle-notif_promo" onchange="onToggleChange('notif_promo',this.checked)"><span class="toggle-track"></span></label></div>
+      </div>
+      <div class="settings-row" onclick="togglePref('notif_sms')">
+        <div class="settings-row-icon icon-teal">💬</div>
+        <div class="settings-row-body"><div class="settings-row-title">SMS Notifications</div><div class="settings-row-sub">Text alerts to your phone</div></div>
+        <div class="settings-row-right"><label class="toggle" onclick="event.stopPropagation()"><input type="checkbox" id="toggle-notif_sms" onchange="onToggleChange('notif_sms',this.checked)"><span class="toggle-track"></span></label></div>
+      </div>
+      <div class="settings-section-label">Preferences</div>
+      <div class="settings-row" onclick="cycleLanguage()">
+        <div class="settings-row-icon icon-purple">🌐</div>
+        <div class="settings-row-body"><div class="settings-row-title">Language</div><div class="settings-row-sub">App display language</div></div>
+        <div class="settings-row-right"><span class="val-badge" id="lang-badge">English</span></div>
+      </div>
+      <div class="settings-row" onclick="togglePref('dark_mode')">
+        <div class="settings-row-icon icon-gray">🌙</div>
+        <div class="settings-row-body"><div class="settings-row-title">Dark Mode</div><div class="settings-row-sub" id="dark-mode-sub">Currently off</div></div>
+        <div class="settings-row-right"><label class="toggle" onclick="event.stopPropagation()"><input type="checkbox" id="toggle-dark_mode" onchange="onToggleChange('dark_mode',this.checked)"><span class="toggle-track"></span></label></div>
+      </div>
+      <div class="settings-section-label">Support</div>
+      <div class="settings-row" onclick="showToast('Help Center opening… 📖')">
+        <div class="settings-row-icon icon-blue">❓</div>
+        <div class="settings-row-body"><div class="settings-row-title">Help Center</div><div class="settings-row-sub">FAQs and support guides</div></div>
+        <div class="settings-row-right"><span class="settings-arrow">›</span></div>
+      </div>
+      <div class="settings-row" onclick="showToast('Thanks for your feedback! 💌')">
+        <div class="settings-row-icon icon-green">📨</div>
+        <div class="settings-row-body"><div class="settings-row-title">Send Feedback</div><div class="settings-row-sub">Help us improve the app</div></div>
+        <div class="settings-row-right"><span class="settings-arrow">›</span></div>
+      </div>
+      <div class="settings-row" onclick="showToast('Privacy Policy coming soon 📄')">
+        <div class="settings-row-icon icon-gray">🔐</div>
+        <div class="settings-row-body"><div class="settings-row-title">Privacy Policy</div><div class="settings-row-sub">How we use your data</div></div>
+        <div class="settings-row-right"><span class="settings-arrow">›</span></div>
+      </div>
+      <div class="settings-section-label">Account Actions</div>
+      <div class="settings-row danger" onclick="doLogout()">
+        <div class="settings-row-icon icon-red">🚪</div>
+        <div class="settings-row-body"><div class="settings-row-title">Sign Out</div><div class="settings-row-sub">Log out of your account</div></div>
+        <div class="settings-row-right"><span class="settings-arrow" style="color:var(--danger)">›</span></div>
+      </div>
+      <div class="settings-version">Washease v1.0.0 · Made with 💚</div>
+    </div>
+  </div>
+
+  <!-- ══════════════ EDIT PROFILE MODAL ══════════════ -->
+  <div class="edit-modal" id="edit-modal">
+    <div class="edit-modal-header">
+      <button onclick="closeEditProfile()">←</button>
+      <div class="edit-modal-title">Edit Profile</div>
+      <div style="width:38px"></div>
+    </div>
+    <div class="edit-modal-body">
+      <div style="display:flex;justify-content:center;margin-bottom:28px;">
+        <div class="profile-avatar" style="margin:0;">👤</div>
+      </div>
+      <div class="edit-field-group">
+        <label class="edit-field-label">Full Name</label>
+        <input class="edit-field-input" type="text" id="edit-name" placeholder="Your full name">
+      </div>
+      <div class="edit-field-group">
+        <label class="edit-field-label">Email Address</label>
+        <input class="edit-field-input" type="email" id="edit-email" placeholder="your@email.com">
+      </div>
+      <div class="edit-field-group">
+        <label class="edit-field-label">Phone Number</label>
+        <input class="edit-field-input" type="tel" id="edit-phone" placeholder="+63 9XX XXX XXXX">
+      </div>
+      <button class="edit-save-btn" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+
+</div><!-- end .phone -->
+
+<script>
+// ═══════════════════ STATE ═══════════════════
+let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+let userPrefs = JSON.parse(localStorage.getItem('userPrefs')) || {
+  notif_booking: true, notif_promo: false, notif_sms: false, dark_mode: false, language: 'English'
+};
+const LANGUAGES = ['English', 'Filipino', 'Bisaya'];
+
+// ═══════════════════ ABOUT ME DATA ═══════════════════
+// ✅ Palitan lang ang photo value — tama na ang lahat ng iba
+const aboutMeData = {
+  name:  'Edmund',        // ← hindi maaapektuhan ng user login
+  role:  'DEVELOPER',
+  bio:   'BSIT Students — passionate about building clean, user-friendly mobile applications.',
+  // ⬇️ PILIIN ANG ISA:
+  // Option A — Local file (kung naka-save sa img/ folder mo):
+  photo: 'data:image/jpeg;base64,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',
+  // Option B — Base64 (pinaka-reliable, i-uncomment at i-paste ang base64 mo):
+  // photo: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...',
+  // Option C — Google Drive:
+  // photo: 'https://lh3.googleusercontent.com/d/1S0QXQNfItpKst19IUsnwSBgPKsWes13W',
+  skills: [
+    { name: 'HTML/CSS',   level: 'Expert',       icon: '🎨' },
+    { name: 'JavaScript', level: 'Advanced',     icon: '⚡' },
+    { name: 'React',      level: 'Advanced',     icon: '⚛️' },
+    { name: 'Node.js',    level: 'Intermediate', icon: '🟢' },
+    { name: 'Python',     level: 'Advanced',     icon: '🐍' },
+    { name: 'Mobile Dev', level: 'Intermediate', icon: '📱' }
+  ]
+};
+
+// ═══════════════════ INIT ═══════════════════
+document.getElementById('profile-name').textContent  = currentUser ? currentUser.name : 'User';
+document.getElementById('profile-email').textContent = currentUser ? (currentUser.email || '—') : '—';
+
+['notif_booking','notif_promo','notif_sms','dark_mode'].forEach(key => {
+  const el = document.getElementById('toggle-' + key);
+  if (el) el.checked = !!userPrefs[key];
+});
+document.getElementById('lang-badge').textContent = userPrefs.language || 'English';
+if (userPrefs.dark_mode) {
+  document.getElementById('app').classList.add('dark-mode');
+  document.getElementById('dark-mode-sub').textContent = 'Currently on 🌙';
+}
+
+// ✅ SET PHOTO — src assigned here in JS only, HTML tags are clean
+const aboutAvatar = document.getElementById('about-avatar');
+const modalAvatar = document.getElementById('modal-avatar');
+aboutAvatar.src = aboutMeData.photo;
+modalAvatar.src = aboutMeData.photo;
+// Fallback kung hindi ma-load
+aboutAvatar.onerror = () => { aboutAvatar.removeAttribute('src'); };
+modalAvatar.onerror = () => { modalAvatar.removeAttribute('src'); };
+
+document.getElementById('about-role').textContent = aboutMeData.role;
+document.getElementById('modal-name').textContent = aboutMeData.name;
+document.getElementById('modal-role').textContent = aboutMeData.role;
+document.getElementById('modal-bio').textContent  = aboutMeData.bio;
+
+document.getElementById('modal-skills').innerHTML = aboutMeData.skills.map(s => `
+  <div class="about-skill-item">
+    <div class="about-skill-icon">${s.icon}</div>
+    <div class="about-skill-info">
+      <div class="about-skill-name">${s.name}</div>
+      <div class="about-skill-level">${s.level}</div>
+    </div>
+  </div>
+`).join('');
+
+// ═══════════════════ SETTINGS ═══════════════════
+function openSettings() {
+  document.getElementById('settings-panel').classList.add('show');
+  document.getElementById('settings-overlay').classList.add('show');
+  document.getElementById('settings-btn').style.transform = 'rotate(90deg)';
+}
+function closeSettings() {
+  document.getElementById('settings-panel').classList.remove('show');
+  document.getElementById('settings-overlay').classList.remove('show');
+  document.getElementById('settings-btn').style.transform = '';
+}
+
+// ═══════════════════ TOGGLE PREFS ═══════════════════
+function onToggleChange(key, val) {
+  userPrefs[key] = val;
+  localStorage.setItem('userPrefs', JSON.stringify(userPrefs));
+  if (key === 'dark_mode') { applyDarkMode(val); return; }
+  const labels = {
+    notif_booking: val ? 'Booking alerts enabled 🔔' : 'Booking alerts disabled',
+    notif_promo:   val ? 'Promo notifications on 🎉' : 'Promo notifications off',
+    notif_sms:     val ? 'SMS notifications on 💬'  : 'SMS notifications off',
+  };
+  if (labels[key]) showToast(labels[key]);
+}
+function applyDarkMode(on) {
+  const phone = document.getElementById('app');
+  if (on) { phone.classList.add('dark-mode'); document.getElementById('dark-mode-sub').textContent = 'Currently on 🌙'; showToast('Dark mode enabled 🌙'); }
+  else    { phone.classList.remove('dark-mode'); document.getElementById('dark-mode-sub').textContent = 'Currently off ☀️'; showToast('Dark mode disabled ☀️'); }
+}
+function togglePref(key) {
+  const el = document.getElementById('toggle-' + key);
+  if (!el || el.disabled) return;
+  el.checked = !el.checked;
+  onToggleChange(key, el.checked);
+}
+function cycleLanguage() {
+  const idx = (LANGUAGES.indexOf(userPrefs.language || 'English') + 1) % LANGUAGES.length;
+  userPrefs.language = LANGUAGES[idx];
+  localStorage.setItem('userPrefs', JSON.stringify(userPrefs));
+  document.getElementById('lang-badge').textContent = LANGUAGES[idx];
+  showToast(`Language set to ${LANGUAGES[idx]} 🌐`);
+}
+
+// ═══════════════════ EDIT PROFILE ═══════════════════
+function openEditProfile() {
+  document.getElementById('edit-name').value  = currentUser ? currentUser.name        : '';
+  document.getElementById('edit-email').value = currentUser ? (currentUser.email || '') : '';
+  document.getElementById('edit-phone').value = currentUser ? (currentUser.phone || '') : '';
+  document.getElementById('edit-modal').classList.add('show');
+}
+function closeEditProfile() { document.getElementById('edit-modal').classList.remove('show'); }
+function saveProfile() {
+  const name  = document.getElementById('edit-name').value.trim();
+  const email = document.getElementById('edit-email').value.trim();
+  const phone = document.getElementById('edit-phone').value.trim();
+  if (!name) { showToast('Please enter your name ✏️', 'warn'); return; }
+  if (currentUser) { currentUser.name = name; currentUser.email = email; currentUser.phone = phone; localStorage.setItem('currentUser', JSON.stringify(currentUser)); }
+  document.getElementById('profile-name').textContent  = name;
+  document.getElementById('profile-email').textContent = email || '—';
+  closeEditProfile();
+  showToast('Profile updated! ✅', 'success');
+}
+
+// ═══════════════════ ABOUT MODAL ═══════════════════
+function openAboutModal()  { document.getElementById('aboutModal').classList.add('active'); document.getElementById('modalScroll').scrollTop = 0; }
+function closeAboutModal() { document.getElementById('aboutModal').classList.remove('active'); }
+
+let touchStartY = 0, touchStartTime = 0;
+const modalScroll = document.getElementById('modalScroll');
+modalScroll.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; touchStartTime = Date.now(); }, { passive: true });
+modalScroll.addEventListener('touchmove', e => {
+  const diff = e.touches[0].clientY - touchStartY;
+  if (modalScroll.scrollTop <= 0 && diff > 0) {
+    const m = document.getElementById('aboutModal');
+    m.style.opacity   = Math.max(0.5, 1 - diff/300);
+    m.style.transform = `scale(${Math.max(0.9, 1 - diff/1000)})`;
+  }
+}, { passive: true });
+modalScroll.addEventListener('touchend', e => {
+  const diff = e.changedTouches[0].clientY - touchStartY;
+  const m = document.getElementById('aboutModal');
+  m.style.opacity = ''; m.style.transform = '';
+  if ((diff > 100 || (diff > 50 && Date.now()-touchStartTime < 200)) && modalScroll.scrollTop <= 0) closeAboutModal();
+}, { passive: true });
+
+// ═══════════════════ TOAST ═══════════════════
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ` toast-${type}` : '');
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════ AUTH ═══════════════════
+function doLogout() {
+  localStorage.removeItem('currentUser');
+  showToast('Signed out successfully 👋');
+  setTimeout(() => location.href = 'index.html', 1000);
+}
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) e.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
+</script>
+</body>
+</html>
