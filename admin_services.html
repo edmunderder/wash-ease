@@ -1,35 +1,25 @@
-<!-- admin_services.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Manage Services - WASH EASE</title>
+<title>Manage Services - Washease</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #F5F0E8;
-    --card: #FFFFFF;
     --primary: #2C4A3E;
     --primary-light: #3D6B5C;
     --primary-dark: #1A2E26;
     --accent: #E8A87C;
-    --accent-hover: #D4956A;
-    --accent2: #D4C5B0;
-    --text: #1A1A1A;
-    --text-muted: #6B7280;
-    --pending: #F59E0B;
-    --process: #3B82F6;
-    --done: #10B981;
     --danger: #EF4444;
-    --border: #E5DDD0;
-    --shadow: 0 4px 24px rgba(44,74,62,0.10);
-    --shadow-hover: 0 8px 32px rgba(44,74,62,0.18);
-    --radius: 18px;
-    --radius-sm: 10px;
+    --success: #10B981;
+    --glass: rgba(255,255,255,0.10);
+    --glass-border: rgba(255,255,255,0.18);
+    --radius: 20px;
+    --radius-sm: 14px;
     --font-display: 'DM Serif Display', serif;
     --font-body: 'DM Sans', sans-serif;
-    --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: all 0.26s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -37,240 +27,575 @@
   body {
     font-family: var(--font-body);
     background: #D8D0C4;
-    color: var(--text);
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    height: 100vh; overflow: hidden;
+    display: flex; justify-content: center; align-items: center;
   }
 
   .phone {
-    width: 100%;
-    max-width: 390px;
-    height: 100vh;
-    max-height: 844px;
-    background: var(--bg);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    width: 100%; max-width: 390px;
+    height: 100vh; max-height: 844px;
+    background: linear-gradient(145deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.35);
   }
 
-  .screen { display:flex; flex-direction:column; height:100%; animation: slideIn 0.28s cubic-bezier(0.4,0,0.2,1); }
+  /* ── Atmospheric BG ── */
+  .orb1 {
+    position:absolute; width:340px; height:340px; border-radius:50%;
+    background:radial-gradient(circle,rgba(232,168,124,0.14) 0%,transparent 70%);
+    top:-110px; right:-80px; pointer-events:none; z-index:0;
+    animation:orbFloat 9s ease-in-out infinite;
+  }
+  .orb2 {
+    position:absolute; width:260px; height:260px; border-radius:50%;
+    background:radial-gradient(circle,rgba(61,107,92,0.2) 0%,transparent 70%);
+    bottom:80px; left:-80px; pointer-events:none; z-index:0;
+    animation:orbFloat 11s ease-in-out infinite reverse;
+  }
+  @keyframes orbFloat { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-18px) scale(1.04);} }
 
-  @keyframes slideIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+  .bubble { position:absolute; border-radius:50%; background:rgba(255,255,255,0.055); pointer-events:none; z-index:0; }
+  .b1{width:32px;height:32px;left:7%;top:22%;animation:bfloat 12s ease-in-out infinite 0s;}
+  .b2{width:16px;height:16px;left:83%;top:14%;animation:bfloat 9s ease-in-out infinite 1s;}
+  .b3{width:24px;height:24px;left:74%;top:62%;animation:bfloat 14s ease-in-out infinite 2s;}
+  .b4{width:12px;height:12px;left:13%;top:74%;animation:bfloat 10s ease-in-out infinite 0.6s;}
+  @keyframes bfloat { 0%,100%{transform:translateY(0);opacity:.4;} 50%{transform:translateY(-14px);opacity:.7;} }
 
-  /* HEADER */
+  /* ── Header ── */
   .header {
-    padding: 16px 20px 12px;
+    padding: 16px 20px 14px;
     display: flex; align-items: center; justify-content: space-between;
-    position: relative; z-index: 10;
-    flex-shrink: 0;
+    background: var(--glass);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border-bottom: 1px solid var(--glass-border);
+    flex-shrink: 0; position: relative; z-index: 10;
+    animation: slideDown 0.5s cubic-bezier(0.34,1.4,0.64,1) both;
   }
-  .header-title { font-family:var(--font-display); font-size:20px; color:var(--primary); }
-
-  /* ADMIN HEADER */
-  .admin-header { background:linear-gradient(135deg, var(--primary-dark), var(--primary)); }
-  .admin-header .header-title { color:#fff; }
-  .admin-header .back-btn { background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.15); }
-  .admin-header .back-btn:hover { background:rgba(255,255,255,0.25); color:#fff; }
-
-  /* ADMIN LOGOUT BTN */
-  .admin-logout-btn {
-    background: rgba(239,68,68,0.15);
-    border: 1px solid rgba(239,68,68,0.4);
-    color: #FCA5A5;
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: var(--font-body);
-    transition: var(--transition);
-    display: flex; align-items: center; gap: 5px;
+  .header::after {
+    content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);
   }
-  .admin-logout-btn:hover { background: rgba(239,68,68,0.3); border-color: rgba(239,68,68,0.7); color: #fff; transform: translateY(-1px); }
-  .admin-logout-btn:active { transform: scale(0.96); }
+  @keyframes slideDown { from{opacity:0;transform:translateY(-14px);} to{opacity:1;transform:translateY(0);} }
 
-  /* SCROLL */
-  .scroll-content { flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; }
-  .scroll-content::-webkit-scrollbar { width:4px; }
-  .scroll-content::-webkit-scrollbar-track { background:transparent; }
-  .scroll-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .header-title { font-family:var(--font-display); font-size:20px; color:#fff; letter-spacing:-0.3px; }
 
-  /* BOTTOM NAV */
-  .bottom-nav { display:flex; background:var(--card); border-top:1px solid var(--border); padding:8px 0 16px; flex-shrink:0; }
-  .nav-item {
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
-    padding:8px 0; cursor:pointer; border:none; background:none;
-    color:var(--text-muted); font-family:var(--font-body); font-size:11px; font-weight:500;
-    transition:var(--transition); border-radius:var(--radius-sm); margin:0 4px;
-    position: relative;
+  .back-btn {
+    width:36px; height:36px; border-radius:50%;
+    background:var(--glass); border:1px solid var(--glass-border);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    font-size:17px; color:rgba(255,255,255,0.8);
+    transition:var(--transition); backdrop-filter:blur(8px);
   }
-  .nav-item:hover { color:var(--primary); background:rgba(44,74,62,0.06); transform:translateY(-2px); }
-  .nav-item.active { color:var(--primary); }
-  .nav-item.active .nav-icon { transform:scale(1.15); filter:drop-shadow(0 2px 4px rgba(44,74,62,0.2)); }
-  .nav-icon { font-size:22px; transition:var(--transition); }
+  .back-btn:hover { background:rgba(255,255,255,0.22); border-color:rgba(255,255,255,0.45); transform:translateX(-3px) scale(1.06); color:#fff; }
+  .back-btn:active { transform:scale(0.92); }
 
-  /* CARDS */
-  .card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:12px; transition:var(--transition); }
-  .card:hover { box-shadow:var(--shadow-hover); }
-
-  /* SERVICE MANAGE ITEMS */
-  .service-manage-item {
-    background:var(--card); border-radius:var(--radius-sm); padding:14px 16px;
-    margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;
-    box-shadow:0 2px 8px rgba(0,0,0,0.05); cursor:pointer; transition:var(--transition);
-    border:1.5px solid transparent;
+  .logout-btn {
+    background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.35);
+    color:#fca5a5; border-radius:20px; padding:6px 14px;
+    font-size:12px; font-weight:700; cursor:pointer;
+    font-family:var(--font-body); transition:var(--transition);
+    display:flex; align-items:center; gap:5px; backdrop-filter:blur(8px);
   }
-  .service-manage-item:hover { border-color:var(--primary); box-shadow:0 6px 18px rgba(44,74,62,0.12); transform:translateX(4px); }
-  .service-manage-left { display:flex; align-items:center; gap:12px; }
-  .service-manage-icon { font-size:28px; transition:var(--transition); }
-  .service-manage-item:hover .service-manage-icon { transform:scale(1.15) rotate(-8deg); }
-  .service-manage-name { font-size:15px; font-weight:700; }
-  .service-manage-price { font-size:12px; color:var(--text-muted); margin-top:2px; }
-  .service-manage-arrow { color:var(--text-muted); font-size:18px; transition:var(--transition); }
-  .service-manage-item:hover .service-manage-arrow { color:var(--primary); transform:translateX(4px); }
+  .logout-btn:hover { background:rgba(239,68,68,0.35); border-color:rgba(239,68,68,0.6); color:#fff; transform:translateY(-1px); }
 
-  /* FORMS */
-  .form-group { margin-bottom:16px; }
-  .form-label { display:block; font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.7px; }
+  /* ── Scroll ── */
+  .scroll-content {
+    flex:1; overflow-y:auto; padding:18px 18px 20px;
+    -webkit-overflow-scrolling:touch; position:relative; z-index:5;
+  }
+  .scroll-content::-webkit-scrollbar { width:3px; }
+  .scroll-content::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.18); border-radius:2px; }
+
+  /* ── Section header ── */
+  .section-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:16px;
+    animation: fadeUp 0.4s ease 0.1s both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+
+  .section-label {
+    font-size:11px; font-weight:700; color:rgba(255,255,255,0.45);
+    text-transform:uppercase; letter-spacing:1.5px;
+  }
+  .service-count {
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18);
+    color:rgba(255,255,255,0.6); font-size:11px; font-weight:700;
+    padding:3px 10px; border-radius:20px;
+  }
+
+  /* ── Add button ── */
+  .add-btn {
+    width:100%; padding:14px;
+    background:rgba(232,168,124,0.15); border:1.5px dashed rgba(232,168,124,0.35);
+    border-radius:var(--radius-sm); color:var(--accent);
+    font-family:var(--font-body); font-size:14px; font-weight:600;
+    cursor:pointer; transition:var(--transition); margin-bottom:12px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    backdrop-filter:blur(8px);
+    animation: fadeUp 0.4s ease 0.15s both;
+  }
+  .add-btn:hover { background:rgba(232,168,124,0.25); border-color:rgba(232,168,124,0.6); transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,168,124,0.15); }
+  .add-btn:active { transform:scale(0.98); }
+
+  /* ── Service item ── */
+  .service-item {
+    background:rgba(255,255,255,0.09);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:var(--radius-sm); padding:14px 16px;
+    margin-bottom:10px;
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; transition:var(--transition);
+    backdrop-filter:blur(12px);
+    position:relative; overflow:hidden;
+    animation: fadeUp 0.45s cubic-bezier(0.34,1.2,0.64,1) both;
+  }
+  .service-item::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+  }
+  .service-item:hover {
+    background:rgba(255,255,255,0.16); border-color:rgba(255,255,255,0.3);
+    transform:translateX(4px);
+    box-shadow:0 6px 20px rgba(0,0,0,0.18);
+  }
+  .service-item:active { transform:scale(0.98); }
+
+  .si-left { display:flex; align-items:center; gap:12px; }
+  .si-icon-wrap {
+    width:44px; height:44px; border-radius:12px;
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.16);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; flex-shrink:0; transition:var(--transition);
+  }
+  .service-item:hover .si-icon-wrap { background:rgba(255,255,255,0.18); transform:scale(1.08) rotate(-5deg); }
+
+  .si-name { font-size:14px; font-weight:700; color:#fff; margin-bottom:3px; }
+  .si-price { font-size:12px; color:rgba(255,255,255,0.5); }
+
+  .si-right { display:flex; align-items:center; gap:8px; }
+  .si-badge {
+    background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.3);
+    color:#6EE7B7; font-size:10px; font-weight:700;
+    padding:3px 9px; border-radius:20px; letter-spacing:0.5px;
+  }
+  .si-badge.inactive { background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.28); color:#fca5a5; }
+  .si-arrow { color:rgba(255,255,255,0.3); font-size:18px; transition:var(--transition); }
+  .service-item:hover .si-arrow { color:rgba(255,255,255,0.7); transform:translateX(3px); }
+
+  /* Staggered animation delays */
+  .service-item:nth-child(1){animation-delay:0.18s;}
+  .service-item:nth-child(2){animation-delay:0.24s;}
+  .service-item:nth-child(3){animation-delay:0.30s;}
+  .service-item:nth-child(4){animation-delay:0.36s;}
+  .service-item:nth-child(5){animation-delay:0.42s;}
+
+  /* ── Edit drawer (slides in from bottom) ── */
+  .drawer-overlay {
+    position:absolute; inset:0;
+    background:rgba(0,0,0,0.45); backdrop-filter:blur(6px);
+    z-index:100; opacity:0; visibility:hidden;
+    transition:all 0.3s ease;
+  }
+  .drawer-overlay.show { opacity:1; visibility:visible; }
+
+  .drawer {
+    position:absolute; bottom:0; left:0; right:0;
+    background:rgba(26,46,38,0.96);
+    backdrop-filter:blur(28px) saturate(1.5);
+    border-top:1px solid rgba(255,255,255,0.2);
+    border-radius:24px 24px 0 0;
+    padding:0 20px 32px;
+    z-index:101;
+    transform:translateY(100%);
+    transition:transform 0.38s cubic-bezier(0.34,1.2,0.64,1);
+    box-shadow:0 -12px 48px rgba(0,0,0,0.4);
+  }
+  .drawer-overlay.show .drawer { transform:translateY(0); }
+
+  .drawer-handle {
+    width:40px; height:4px; border-radius:2px;
+    background:rgba(255,255,255,0.2); margin:14px auto 20px;
+  }
+
+  .drawer-title {
+    font-family:var(--font-display); font-size:22px; color:#fff;
+    margin-bottom:6px; display:flex; align-items:center; gap:10px;
+  }
+  .drawer-subtitle { font-size:13px; color:rgba(255,255,255,0.45); margin-bottom:22px; }
+
+  /* ── Glass form inputs ── */
+  .form-group { margin-bottom:14px; }
+  .form-label {
+    display:block; font-size:11px; font-weight:600;
+    color:rgba(255,255,255,0.5); margin-bottom:7px;
+    text-transform:uppercase; letter-spacing:1.2px;
+  }
   .form-input {
-    width:100%; padding:14px 16px;
-    border:1.5px solid var(--border); border-radius:var(--radius-sm);
-    font-family:var(--font-body); font-size:15px;
-    background:var(--bg); color:var(--text); outline:none;
+    width:100%; padding:13px 16px;
+    border:1.5px solid rgba(255,255,255,0.18);
+    border-radius:12px; font-family:var(--font-body); font-size:15px;
+    background:rgba(255,255,255,0.09); color:#fff; outline:none;
     transition:var(--transition); -webkit-appearance:none;
+    backdrop-filter:blur(10px);
   }
-  .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(44,74,62,0.12); background:#fff; transform:translateY(-1px); }
+  .form-input::placeholder { color:rgba(255,255,255,0.3); }
+  .form-input:focus {
+    background:rgba(255,255,255,0.16); border-color:rgba(255,255,255,0.5);
+    box-shadow:0 0 0 3px rgba(255,255,255,0.08); transform:translateY(-1px);
+  }
 
-  /* BUTTONS */
+  /* Toggle active/inactive */
+  .toggle-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 16px;
+    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px; margin-bottom:18px;
+  }
+  .toggle-label { font-size:14px; color:rgba(255,255,255,0.8); font-weight:500; }
+  .toggle-switch {
+    width:44px; height:24px; border-radius:12px;
+    background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2);
+    position:relative; cursor:pointer; transition:var(--transition);
+  }
+  .toggle-switch.on { background:rgba(16,185,129,0.5); border-color:rgba(16,185,129,0.6); }
+  .toggle-knob {
+    width:18px; height:18px; border-radius:50%; background:#fff;
+    position:absolute; top:2px; left:3px;
+    transition:transform 0.25s cubic-bezier(0.34,1.4,0.64,1);
+    box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  }
+  .toggle-switch.on .toggle-knob { transform:translateX(20px); }
+
+  /* Drawer buttons */
+  .drawer-btns { display:flex; gap:10px; }
   .btn {
-    width:100%; padding:15px; border-radius:var(--radius-sm); border:none; cursor:pointer;
-    font-family:var(--font-body); font-size:15px; font-weight:600;
+    flex:1; padding:15px; border-radius:var(--radius-sm); border:none;
+    cursor:pointer; font-family:var(--font-body); font-size:15px; font-weight:600;
     transition:var(--transition); letter-spacing:0.3px; position:relative; overflow:hidden;
   }
   .btn:active { transform:scale(0.97); }
-  .btn-primary { background:linear-gradient(135deg, var(--primary), var(--primary-light)); color:#fff; box-shadow:0 4px 16px rgba(44,74,62,0.25); }
-  .btn-primary:hover { background:linear-gradient(135deg, var(--primary-dark), var(--primary)); box-shadow:0 8px 24px rgba(44,74,62,0.35); transform:translateY(-2px); }
-  .btn-primary:active { transform:translateY(0) scale(0.97); }
-  .btn-ghost { background:var(--bg); color:var(--text-muted); border:1.5px solid var(--border); }
-  .btn-ghost:hover { background:var(--card); color:var(--text); border-color:var(--accent2); box-shadow:0 4px 12px rgba(0,0,0,0.08); transform:translateY(-1px); }
+  .btn-cancel {
+    background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.22);
+    color:rgba(255,255,255,0.75); backdrop-filter:blur(8px);
+  }
+  .btn-cancel:hover { background:rgba(255,255,255,0.15); color:#fff; }
 
-  /* TOAST */
+  .btn-save {
+    background:rgba(255,255,255,0.15); border:1.5px solid rgba(255,255,255,0.35);
+    color:#fff; backdrop-filter:blur(16px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .btn-save::before {
+    content:''; position:absolute; top:0; left:-100%;
+    width:60%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+    transition:left 0.5s ease; pointer-events:none;
+  }
+  .btn-save:hover {
+    background:rgba(255,255,255,0.24); border-color:rgba(255,255,255,0.55);
+    transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,0.22);
+  }
+  .btn-save:hover::before { left:140%; }
+
+  .btn-delete {
+    background:rgba(239,68,68,0.15); border:1.5px solid rgba(239,68,68,0.32);
+    color:#fca5a5; width:100%; margin-top:10px;
+    backdrop-filter:blur(8px);
+  }
+  .btn-delete:hover { background:rgba(239,68,68,0.3); color:#fff; transform:translateY(-1px); }
+
+  /* ── Add new service form ── */
+  .add-drawer .drawer-title { color:var(--accent); }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    display:flex;
+    background:rgba(255,255,255,0.10);
+    backdrop-filter:blur(24px) saturate(1.4);
+    -webkit-backdrop-filter:blur(24px) saturate(1.4);
+    border-top:1px solid rgba(255,255,255,0.18);
+    padding:8px 0 16px; flex-shrink:0; position:relative; z-index:10;
+  }
+  .bottom-nav::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.28),transparent);
+  }
+  .nav-item {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:8px 0; cursor:pointer; border:none; background:none;
+    color:rgba(255,255,255,0.5); font-family:var(--font-body); font-size:10px; font-weight:600;
+    transition:var(--transition); border-radius:12px; margin:0 4px;
+    text-transform:uppercase; letter-spacing:0.5px;
+  }
+  .nav-item:hover { color:rgba(255,255,255,0.85); background:rgba(255,255,255,0.08); transform:translateY(-2px); }
+  .nav-item.active { color:#fff; }
+  .nav-item.active .nav-icon { filter:drop-shadow(0 2px 6px rgba(232,168,124,0.5)); transform:scale(1.15); }
+  .nav-icon { font-size:20px; transition:var(--transition); }
+
+  /* ── Toast ── */
   .toast {
-    position:absolute; bottom:110px; left:50%;
-    transform:translateX(-50%) translateY(20px);
-    background:var(--primary); color:#fff; padding:12px 24px;
-    border-radius:30px; font-size:14px; font-weight:600;
+    position:absolute; bottom:90px; left:50%;
+    transform:translateX(-50%) translateY(16px);
+    background:rgba(16,185,129,0.88); backdrop-filter:blur(12px);
+    color:#fff; padding:12px 24px; border-radius:30px;
+    font-size:14px; font-weight:600;
     opacity:0; transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-    white-space:nowrap; pointer-events:none; z-index:100;
-    box-shadow:0 8px 24px rgba(44,74,62,0.3); max-width:330px;
-    text-align:center; white-space:normal;
+    pointer-events:none; z-index:200;
+    box-shadow:0 8px 28px rgba(0,0,0,0.22);
+    border:1px solid rgba(255,255,255,0.18);
+    text-align:center; max-width:300px;
   }
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.error { background:rgba(239,68,68,0.88); }
 </style>
 </head>
 <body>
-<div class="phone" id="app">
+<div class="phone">
 
-  <!-- TOAST -->
+  <div class="orb1"></div>
+  <div class="orb2"></div>
+  <div class="bubble b1"></div>
+  <div class="bubble b2"></div>
+  <div class="bubble b3"></div>
+  <div class="bubble b4"></div>
+
   <div class="toast" id="toast"></div>
 
-  <!-- ====== ADMIN MANAGE SERVICES ====== -->
-  <div class="screen active" id="screen-admin-manage-services">
-    <div class="header admin-header">
-      <button class="back-btn" onclick="location.href='admin_dashboard.html'">←</button>
-      <div class="header-title">Manage Services</div>
-      <button class="admin-logout-btn" onclick="doAdminLogout()">⏻ Sign Out</button>
-    </div>
-    <div class="scroll-content">
-      <div class="service-manage-item" onclick="showServiceEditor('Wash & Fold','🧺','₱150/kg')">
-        <div class="service-manage-left"><div class="service-manage-icon">🧺</div><div><div class="service-manage-name">Wash & Fold</div><div class="service-manage-price">₱ 150 per kg</div></div></div>
-        <span class="service-manage-arrow">›</span>
+  <!-- ── Edit / Add Drawer ── -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
+    <div class="drawer" id="drawer">
+      <div class="drawer-handle"></div>
+      <div class="drawer-title" id="drawerTitle">🧺 Edit Service</div>
+      <div class="drawer-subtitle" id="drawerSubtitle">Update the details below</div>
+
+      <div class="form-group">
+        <label class="form-label">Service Name</label>
+        <input class="form-input" type="text" id="editorName" placeholder="e.g. Wash & Fold">
       </div>
-      <div class="service-manage-item" onclick="showServiceEditor('Dry Cleaning','👔','₱300/item')">
-        <div class="service-manage-left"><div class="service-manage-icon">👔</div><div><div class="service-manage-name">Dry Cleaning</div><div class="service-manage-price">₱ 300 per item</div></div></div>
-        <span class="service-manage-arrow">›</span>
+      <div class="form-group">
+        <label class="form-label">Price</label>
+        <input class="form-input" type="text" id="editorPrice" placeholder="e.g. ₱150/kg">
       </div>
-      <div class="service-manage-item" onclick="showServiceEditor('Ironing','👕','₱100/item')">
-        <div class="service-manage-left"><div class="service-manage-icon">👕</div><div><div class="service-manage-name">Ironing</div><div class="service-manage-price">₱ 100 per item</div></div></div>
-        <span class="service-manage-arrow">›</span>
+      <div class="form-group">
+        <label class="form-label">Icon (emoji)</label>
+        <input class="form-input" type="text" id="editorIcon" placeholder="e.g. 🧺" maxlength="4">
       </div>
-      <div class="service-manage-item" onclick="showServiceEditor('Stain Removal','🧴','₱500/item')">
-        <div class="service-manage-left"><div class="service-manage-icon">🧴</div><div><div class="service-manage-name">Stain Removal</div><div class="service-manage-price">₱ 500 per item</div></div></div>
-        <span class="service-manage-arrow">›</span>
-      </div>
-      <div class="service-manage-item" onclick="showServiceEditor('Express','⚡','₱250/kg')">
-        <div class="service-manage-left"><div class="service-manage-icon">⚡</div><div><div class="service-manage-name">Express</div><div class="service-manage-price">₱ 250 per kg</div></div></div>
-        <span class="service-manage-arrow">›</span>
-      </div>
-      <div id="service-editor" style="display:none;" class="card">
-        <div style="font-weight:700;margin-bottom:12px;" id="editor-title">Edit Service</div>
-        <div class="form-group"><label class="form-label">Service Name</label><input class="form-input" type="text" id="editor-name"></div>
-        <div class="form-group"><label class="form-label">Price</label><input class="form-input" type="text" id="editor-price"></div>
-        <div style="display:flex;gap:10px;margin-top:8px;">
-          <button class="btn btn-ghost" style="flex:1;" onclick="closeServiceEditor()">Cancel</button>
-          <button class="btn btn-primary" style="flex:1;" onclick="saveService()">Save</button>
+
+      <div class="toggle-row">
+        <span class="toggle-label">Service Active</span>
+        <div class="toggle-switch on" id="toggleSwitch" onclick="toggleActive()">
+          <div class="toggle-knob"></div>
         </div>
       </div>
-    </div>
-    <div class="bottom-nav">
-      <button class="nav-item" onclick="location.href='admin_bookings.html'"><span class="nav-icon">📋</span>Bookings</button>
-      <button class="nav-item active"><span class="nav-icon">⚙️</span>Services</button>
-      <button class="nav-item" onclick="location.href='admin_dashboard.html'"><span class="nav-icon">📊</span>Dashboard</button>
+
+      <div class="drawer-btns">
+        <button class="btn btn-cancel" onclick="closeDrawer()">Cancel</button>
+        <button class="btn btn-save" onclick="saveService()">Save Changes</button>
+      </div>
+      <button class="btn btn-delete" id="deleteBtn" onclick="deleteService()">🗑️ Delete Service</button>
     </div>
   </div>
 
-</div><!-- end .phone -->
+  <!-- ── Header ── -->
+  <div class="header">
+    <button class="back-btn" onclick="location.href='admin_dashboard.html'">←</button>
+    <div class="header-title">Manage Services</div>
+    <button class="logout-btn" onclick="doLogout()">⏻ Sign Out</button>
+  </div>
+
+  <!-- ── Scroll content ── -->
+  <div class="scroll-content">
+
+    <div class="section-header">
+      <span class="section-label">All Services</span>
+      <span class="service-count" id="serviceCount">0 services</span>
+    </div>
+
+    <!-- Add new service button -->
+    <button class="add-btn" onclick="openAddDrawer()">
+      <span style="font-size:18px;">+</span>
+      <span>Add New Service</span>
+    </button>
+
+    <!-- Service list -->
+    <div id="serviceList"></div>
+
+  </div>
+
+  <!-- ── Bottom Nav ── -->
+  <div class="bottom-nav">
+    <button class="nav-item" onclick="location.href='admin_bookings.html'"><span class="nav-icon">📋</span>Bookings</button>
+    <button class="nav-item active"><span class="nav-icon">⚙️</span>Services</button>
+    <button class="nav-item" onclick="location.href='admin_dashboard.html'"><span class="nav-icon">📊</span>Dashboard</button>
+  </div>
+
+</div>
 
 <script>
-// Check admin auth
-if (!localStorage.getItem('adminLoggedIn')) {
-  location.href = 'admin_login.html';
+if (!localStorage.getItem('adminLoggedIn')) location.href = 'admin_login.html';
+
+// ── Default services ──
+const DEFAULT_SERVICES = [
+  { id:'svc1', name:'Wash & Fold',    icon:'🧺', price:'₱150/kg',   active:true  },
+  { id:'svc2', name:'Dry Cleaning',   icon:'👔', price:'₱300/item', active:true  },
+  { id:'svc3', name:'Ironing',        icon:'👕', price:'₱100/item', active:true  },
+  { id:'svc4', name:'Stain Removal',  icon:'🧴', price:'₱500/item', active:true  },
+  { id:'svc5', name:'Express',        icon:'⚡', price:'₱250/kg',   active:true  },
+];
+
+let services = JSON.parse(localStorage.getItem('washease_services')) || DEFAULT_SERVICES;
+let editingId = null;
+let isAdding = false;
+
+function saveToStorage() {
+  localStorage.setItem('washease_services', JSON.stringify(services));
 }
 
-// ═══════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════
-let toastTimer;
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  clearTimeout(toastTimer);
-  t.textContent = msg;
-  t.className = 'toast' + (type ? ` toast-${type}` : '');
-  t.classList.add('show');
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+// ── Render ──
+function renderServices() {
+  const list = document.getElementById('serviceList');
+  document.getElementById('serviceCount').textContent = `${services.length} service${services.length !== 1 ? 's' : ''}`;
+
+  if (services.length === 0) {
+    list.innerHTML = `
+      <div style="text-align:center;padding:48px 20px;color:rgba(255,255,255,0.35);">
+        <div style="font-size:48px;margin-bottom:12px;">🧺</div>
+        <div style="font-size:15px;font-weight:600;color:rgba(255,255,255,0.5);margin-bottom:6px;">No services yet</div>
+        <div style="font-size:13px;">Tap "Add New Service" to get started</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = services.map((s, i) => `
+    <div class="service-item" style="animation-delay:${0.18 + i * 0.06}s" onclick="openEditDrawer('${s.id}')">
+      <div class="si-left">
+        <div class="si-icon-wrap">${s.icon}</div>
+        <div>
+          <div class="si-name">${s.name}</div>
+          <div class="si-price">${s.price}</div>
+        </div>
+      </div>
+      <div class="si-right">
+        <div class="si-badge ${s.active ? '' : 'inactive'}">${s.active ? 'Active' : 'Off'}</div>
+        <div class="si-arrow">›</div>
+      </div>
+    </div>
+  `).join('');
 }
 
-// ═══════════════════════════════════════════════
-// SERVICE EDITOR
-// ═══════════════════════════════════════════════
-function showServiceEditor(name, icon, price) {
-  document.getElementById('editor-title').textContent = icon + ' Edit ' + name;
-  document.getElementById('editor-name').value = name;
-  document.getElementById('editor-price').value = price;
-  const ed = document.getElementById('service-editor'); 
-  ed.style.display = 'block';
-  ed.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+// ── Drawer ──
+function openEditDrawer(id) {
+  const svc = services.find(s => s.id === id);
+  if (!svc) return;
+
+  isAdding = false;
+  editingId = id;
+
+  document.getElementById('drawerTitle').textContent = `${svc.icon} Edit Service`;
+  document.getElementById('drawerSubtitle').textContent = 'Update the details below';
+  document.getElementById('editorName').value = svc.name;
+  document.getElementById('editorPrice').value = svc.price;
+  document.getElementById('editorIcon').value = svc.icon;
+  document.getElementById('deleteBtn').style.display = 'block';
+
+  const toggle = document.getElementById('toggleSwitch');
+  toggle.classList.toggle('on', svc.active);
+
+  document.getElementById('drawerOverlay').classList.add('show');
 }
 
-function closeServiceEditor() { 
-  document.getElementById('service-editor').style.display = 'none'; 
+function openAddDrawer() {
+  isAdding = true;
+  editingId = null;
+
+  document.getElementById('drawerTitle').textContent = '✨ Add New Service';
+  document.getElementById('drawerSubtitle').textContent = 'Fill in the details below';
+  document.getElementById('editorName').value = '';
+  document.getElementById('editorPrice').value = '';
+  document.getElementById('editorIcon').value = '';
+  document.getElementById('deleteBtn').style.display = 'none';
+
+  const toggle = document.getElementById('toggleSwitch');
+  toggle.classList.add('on');
+
+  document.getElementById('drawerOverlay').classList.add('show');
+}
+
+function closeDrawer(e) {
+  if (e && e.target !== document.getElementById('drawerOverlay')) return;
+  document.getElementById('drawerOverlay').classList.remove('show');
+  editingId = null; isAdding = false;
+}
+
+function toggleActive() {
+  document.getElementById('toggleSwitch').classList.toggle('on');
 }
 
 function saveService() {
-  showToast('Service updated! ✅');
-  closeServiceEditor();
+  const name  = document.getElementById('editorName').value.trim();
+  const price = document.getElementById('editorPrice').value.trim();
+  const icon  = document.getElementById('editorIcon').value.trim() || '🧺';
+  const active = document.getElementById('toggleSwitch').classList.contains('on');
+
+  if (!name || !price) {
+    showToast('Please fill in name and price.', 'error');
+    return;
+  }
+
+  if (isAdding) {
+    const newSvc = {
+      id: 'svc_' + Date.now(),
+      name, price, icon, active
+    };
+    services.push(newSvc);
+    saveToStorage();
+    renderServices();
+    document.getElementById('drawerOverlay').classList.remove('show');
+    showToast(`${icon} ${name} added!`);
+  } else {
+    const idx = services.findIndex(s => s.id === editingId);
+    if (idx > -1) {
+      services[idx] = { ...services[idx], name, price, icon, active };
+      saveToStorage();
+      renderServices();
+      document.getElementById('drawerOverlay').classList.remove('show');
+      showToast(`${icon} ${name} updated!`);
+    }
+  }
 }
 
-function doAdminLogout() {
+function deleteService() {
+  const svc = services.find(s => s.id === editingId);
+  if (!svc) return;
+
+  services = services.filter(s => s.id !== editingId);
+  saveToStorage();
+  renderServices();
+  document.getElementById('drawerOverlay').classList.remove('show');
+  showToast(`${svc.name} deleted.`, 'error');
+}
+
+// ── Toast ──
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function doLogout() {
   localStorage.removeItem('adminLoggedIn');
-  showToast('Admin signed out.');
+  showToast('Signed out.');
   setTimeout(() => location.href = 'index.html', 900);
 }
+
+// ── Init ──
+renderServices();
 </script>
 </body>
 </html>

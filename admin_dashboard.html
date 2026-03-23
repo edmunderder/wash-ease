@@ -23,8 +23,6 @@
     --font-display: 'DM Serif Display', serif;
     --font-body: 'DM Sans', sans-serif;
     --transition: all 0.26s cubic-bezier(0.4, 0, 0.2, 1);
-
-    /* Glass tokens */
     --glass: rgba(255,255,255,0.14);
     --glass-border: rgba(255,255,255,0.28);
     --glass-strong: rgba(255,255,255,0.22);
@@ -33,7 +31,6 @@
 
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-  /* ── ANIMATED BACKGROUND ── */
   body {
     font-family: var(--font-body);
     color: #fff;
@@ -61,14 +58,12 @@
     50%{transform:translate(-15px,15px) scale(0.96)} 75%{transform:translate(15px,8px) scale(1.02)} 100%{transform:translate(0,0) scale(1)}
   }
 
-  /* Noise grain overlay */
   body::after {
     content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     opacity: 0.4;
   }
 
-  /* Grid lines */
   body::before {
     content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
     background-image:
@@ -77,7 +72,6 @@
     background-size: 44px 44px;
   }
 
-  /* ── PHONE ── */
   .phone {
     width:100%; max-width:390px; height:100vh; max-height:844px;
     position:relative; overflow:hidden; display:flex; flex-direction:column; z-index:1;
@@ -92,7 +86,6 @@
   @keyframes countUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
   @keyframes glow    { 0%,100%{box-shadow:0 0 12px rgba(232,168,124,0.3)} 50%{box-shadow:0 0 28px rgba(232,168,124,0.6)} }
 
-  /* ── GLASS HEADER ── */
   .header {
     padding: 16px 20px 14px;
     display: flex; align-items: center; justify-content: space-between;
@@ -108,7 +101,6 @@
   }
   .header-title { font-family:var(--font-display); font-size:20px; color:#fff; letter-spacing:0.3px; }
 
-  /* ── LOGOUT BTN ── */
   .admin-logout-btn {
     background: rgba(239,68,68,0.18);
     border: 1px solid rgba(239,68,68,0.38);
@@ -121,12 +113,10 @@
   }
   .admin-logout-btn:hover { background:rgba(239,68,68,0.35); border-color:rgba(239,68,68,0.6); color:#fff; transform:translateY(-1px); }
 
-  /* ── SCROLL ── */
   .scroll-content { flex:1; overflow-y:auto; padding:18px 18px 20px; -webkit-overflow-scrolling:touch; }
   .scroll-content::-webkit-scrollbar { width:4px; }
   .scroll-content::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.18); border-radius:2px; }
 
-  /* ── GLASS CARD BASE ── */
   .glass-card {
     background: var(--glass);
     backdrop-filter: blur(20px) saturate(1.4);
@@ -147,7 +137,6 @@
     transform: translateY(-2px);
   }
 
-  /* ── REVENUE CARD ── */
   .revenue-card {
     background: linear-gradient(135deg,
       rgba(255,255,255,0.18) 0%,
@@ -218,7 +207,6 @@
   .revenue-breakdown-value { font-family:var(--font-display); font-size:17px; color:#fff; margin-bottom:2px; }
   .revenue-breakdown-label { font-size:9px; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.8px; }
 
-  /* ── CASH FLOW CARD ── */
   .cash-flow-card { padding:18px; margin-bottom:14px; }
   .cash-flow-title { font-size:13px; font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:14px; display:flex; align-items:center; gap:8px; text-transform:uppercase; letter-spacing:0.8px; }
   .cash-flow-item { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
@@ -238,14 +226,12 @@
   .cash-flow-total .cash-flow-label { color:#fff; font-weight:700; font-size:13px; }
   .cash-flow-total .cash-flow-value { font-size:20px; color:#fff; }
 
-  /* ── METRICS GRID ── */
   .metrics-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
   .metric-card { padding:16px; border-radius:var(--radius-sm); }
   .metric-icon { font-size:22px; margin-bottom:8px; }
   .metric-value { font-family:var(--font-display); font-size:26px; color:#fff; }
   .metric-label { font-size:10px; color:rgba(255,255,255,0.5); font-weight:700; text-transform:uppercase; letter-spacing:0.8px; margin-top:2px; }
 
-  /* ── SERVICE STATS CARD ── */
   .service-card { padding:18px; margin-bottom:14px; }
   .section-title { font-size:13px; font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:14px; text-transform:uppercase; letter-spacing:0.8px; display:flex; align-items:center; gap:8px; }
 
@@ -256,7 +242,6 @@
   }
   .progress-fill::after { content:''; position:absolute; top:0; right:0; width:24px; height:100%; background:rgba(255,255,255,0.35); animation:shimmer 1.8s infinite; }
 
-  /* ── DATA MANAGEMENT ── */
   .data-mgmt-card {
     background: rgba(239,68,68,0.10);
     border:1px solid rgba(239,68,68,0.28);
@@ -266,7 +251,6 @@
   .data-mgmt-title { font-size:12px; font-weight:700; color:#fca5a5; margin-bottom:12px; display:flex; align-items:center; gap:8px; text-transform:uppercase; letter-spacing:0.8px; }
   .data-mgmt-buttons { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-  /* ── BUTTONS ── */
   .btn {
     width:100%; padding:13px; border-radius:var(--radius-sm); border:none; cursor:pointer;
     font-family:var(--font-body); font-size:14px; font-weight:600;
@@ -297,10 +281,8 @@
 
   .btn-sm { padding:10px 14px; font-size:12px; width:auto; }
 
-  /* ── QUICK ACTIONS ── */
   .quick-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
 
-  /* ── BOOKING LIST ── */
   .booking-list-card { padding:16px; margin-bottom:14px; max-height:280px; overflow-y:auto; }
   .booking-list-title { font-size:13px; font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
 
@@ -331,7 +313,6 @@
   .empty-state { text-align:center; padding:32px 20px; color:rgba(255,255,255,0.4); }
   .empty-state-icon { font-size:40px; margin-bottom:10px; }
 
-  /* ── MODAL ── */
   .modal-overlay {
     position:absolute; inset:0;
     background:rgba(0,0,0,0.55);
@@ -355,7 +336,6 @@
   .modal-buttons { display:flex; gap:10px; }
   .modal-buttons .btn { flex:1; }
 
-  /* ── BOTTOM NAV ── */
   .bottom-nav {
     display:flex;
     background:rgba(255,255,255,0.10);
@@ -380,7 +360,6 @@
   .nav-item.active .nav-icon { filter:drop-shadow(0 2px 6px rgba(232,168,124,0.5)); transform:scale(1.15); }
   .nav-icon { font-size:20px; transition:var(--transition); }
 
-  /* ── TOAST ── */
   .toast {
     position:absolute; bottom:90px; left:50%;
     transform:translateX(-50%) translateY(20px);
@@ -397,10 +376,8 @@
   .toast.success { background:rgba(16,185,129,0.28); border-color:rgba(16,185,129,0.45); }
   .toast.error   { background:rgba(239,68,68,0.28); border-color:rgba(239,68,68,0.45); }
 
-  /* ── LAST UPDATED ── */
   .last-updated { text-align:center; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:20px; letter-spacing:0.5px; }
 
-  /* Stagger animation for cards */
   .glass-card:nth-child(1) { animation: fadeUp 0.4s ease both; animation-delay:0.05s; }
   .glass-card:nth-child(2) { animation: fadeUp 0.4s ease both; animation-delay:0.1s; }
   .glass-card:nth-child(3) { animation: fadeUp 0.4s ease both; animation-delay:0.15s; }
@@ -409,7 +386,6 @@
 </head>
 <body>
 
-<!-- Animated blobs -->
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
 <div class="blob blob-3"></div>
@@ -418,7 +394,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- MODAL -->
   <div class="modal-overlay" id="modal">
     <div class="modal">
       <div class="modal-title" id="modalTitle">Confirm Action</div>
@@ -430,10 +405,8 @@
     </div>
   </div>
 
-  <!-- DASHBOARD SCREEN -->
   <div class="screen active" id="screen-admin-dashboard">
 
-    <!-- HEADER -->
     <div class="header">
       <div style="width:36px"></div>
       <div class="header-title">Dashboard</div>
@@ -442,7 +415,6 @@
 
     <div class="scroll-content">
 
-      <!-- REVENUE CARD -->
       <div class="revenue-card">
         <div class="revenue-header">
           <div class="revenue-label">💰 Total Revenue</div>
@@ -479,7 +451,6 @@
         </div>
       </div>
 
-      <!-- CASH FLOW -->
       <div class="glass-card cash-flow-card">
         <div class="cash-flow-title"><span>📊</span><span>Revenue Breakdown</span></div>
         <div class="cash-flow-item">
@@ -500,7 +471,6 @@
         </div>
       </div>
 
-      <!-- METRICS GRID -->
       <div class="metrics-grid">
         <div class="glass-card metric-card">
           <div class="metric-icon">📋</div>
@@ -524,13 +494,11 @@
         </div>
       </div>
 
-      <!-- SERVICE STATS -->
       <div class="glass-card service-card">
         <div class="section-title"><span>📈</span><span>Bookings by Service</span></div>
         <div id="service-stats-list"></div>
       </div>
 
-      <!-- DATA MANAGEMENT -->
       <div class="data-mgmt-card">
         <div class="data-mgmt-title"><span>⚠️</span><span>Data Management</span></div>
         <div class="data-mgmt-buttons">
@@ -539,7 +507,6 @@
         </div>
       </div>
 
-      <!-- BOOKING LIST (Collapsible) -->
       <div class="section-content" id="bookingListSection">
         <div class="glass-card booking-list-card">
           <div class="booking-list-title">
@@ -550,7 +517,6 @@
         </div>
       </div>
 
-      <!-- QUICK ACTIONS -->
       <div class="section-title" style="margin-bottom:10px;"><span>⚡</span><span>Quick Actions</span></div>
       <div class="quick-actions">
         <button class="btn btn-primary" onclick="location.href='admin_bookings.html'">📋 Bookings</button>
@@ -560,7 +526,6 @@
       <div class="last-updated" id="last-updated">Last updated: —</div>
     </div>
 
-    <!-- BOTTOM NAV -->
     <div class="bottom-nav">
       <button class="nav-item" onclick="location.href='admin_bookings.html'"><span class="nav-icon">📋</span>Bookings</button>
       <button class="nav-item" onclick="location.href='admin_services.html'"><span class="nav-icon">⚙️</span>Services</button>
@@ -571,12 +536,27 @@
 </div>
 
 <script>
-let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-let modalCallback = null;
-let bookingToDelete = null;
+// ═══════════════════════════════════════════════════════
+// THE FIX: Only inject sample data ONCE using a flag.
+// After clear all, the flag stays true so sample data
+// will NEVER be re-injected on reload or re-login.
+// ═══════════════════════════════════════════════════════
+const SAMPLE_KEY = 'washease_sample_loaded';
 
-// Sample data
-if (bookings.length === 0) {
+// ✅ Load bookings and immediately strip out any undefined/invalid entries
+let bookings = (JSON.parse(localStorage.getItem('bookings')) || []).filter(b =>
+  b &&
+  typeof b === 'object' &&
+  b.id && b.id !== 'undefined' &&
+  b.service && b.service !== 'undefined' &&
+  b.price !== undefined && b.price !== null && !isNaN(Number(b.price)) &&
+  b.status && b.status !== 'undefined'
+);
+// Save the cleaned list back immediately
+localStorage.setItem('bookings', JSON.stringify(bookings));
+
+if (bookings.length === 0 && !localStorage.getItem(SAMPLE_KEY)) {
+  // First-ever load only — inject sample data once
   bookings = [
     { id:'BK001', service:'Wash & Fold',   price:150, status:'done',    date:new Date().toISOString(), bookedAt:new Date().toISOString() },
     { id:'BK002', service:'Dry Cleaning',  price:280, status:'done',    date:new Date().toISOString(), bookedAt:new Date().toISOString() },
@@ -585,6 +565,7 @@ if (bookings.length === 0) {
     { id:'BK005', service:'Premium Wash',  price:350, status:'done',    date:new Date(Date.now()-86400000).toISOString(), bookedAt:new Date(Date.now()-86400000).toISOString() }
   ];
   localStorage.setItem('bookings', JSON.stringify(bookings));
+  localStorage.setItem(SAMPLE_KEY, 'true'); // mark as loaded — never inject again
 }
 
 if (!localStorage.getItem('adminLoggedIn')) location.href = 'admin_login.html';
@@ -603,6 +584,9 @@ function showToast(msg,type){
   toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 }
 
+let modalCallback = null;
+let bookingToDelete = null;
+
 function showModal(title,text,cb,confirmText='Confirm',isDanger=true){
   document.getElementById('modalTitle').textContent=title;
   document.getElementById('modalText').textContent=text;
@@ -619,16 +603,22 @@ function showClearAllModal(){
   if(bookings.length===0){ showToast('No bookings to clear','error'); return; }
   showModal('⚠️ Clear All Bookings',`Delete all ${bookings.length} bookings? This cannot be undone.`,clearAllBookings,'Yes, Clear All',true);
 }
+
 function clearAllBookings(){
-  bookings=[]; localStorage.setItem('bookings',JSON.stringify(bookings));
-  renderAdminDashboard(); renderBookingList();
+  bookings=[];
+  localStorage.setItem('bookings', JSON.stringify(bookings));
+  // ✅ Keep SAMPLE_KEY — do NOT remove it, so sample data stays gone on reload
+  renderAdminDashboard();
+  renderBookingList();
   showToast('All bookings cleared','success');
 }
+
 function toggleBookingList(){
   const s=document.getElementById('bookingListSection');
   s.classList.toggle('show');
   if(s.classList.contains('show')) renderBookingList();
 }
+
 function renderBookingList(){
   const c=document.getElementById('bookingListContainer');
   document.getElementById('bookingCount').textContent=`${bookings.length} items`;
@@ -647,15 +637,22 @@ function renderBookingList(){
     </div>
   `).join('');
 }
+
 function confirmDeleteBooking(id){
   const b=bookings.find(x=>x.id===id); if(!b) return;
   bookingToDelete=id;
   showModal('🗑️ Delete Booking',`Delete booking ${b.id} (${b.service})? This cannot be undone.`,deleteBooking,'Yes, Delete',true);
 }
+
 function deleteBooking(){
   if(!bookingToDelete) return;
   const i=bookings.findIndex(b=>b.id===bookingToDelete);
-  if(i>-1){ const d=bookings.splice(i,1)[0]; localStorage.setItem('bookings',JSON.stringify(bookings)); renderAdminDashboard(); renderBookingList(); showToast(`Booking ${d.id} deleted`,'success'); }
+  if(i>-1){
+    const d=bookings.splice(i,1)[0];
+    localStorage.setItem('bookings',JSON.stringify(bookings));
+    renderAdminDashboard(); renderBookingList();
+    showToast(`Booking ${d.id} deleted`,'success');
+  }
   bookingToDelete=null;
 }
 
@@ -724,7 +721,7 @@ function animateValue(id,end,formatter){
   const step=(timestamp)=>{
     if(!startTimestamp) startTimestamp=timestamp;
     const progress=Math.min((timestamp-startTimestamp)/duration,1);
-    const value=Math.floor(progress*(end-0)+0);
+    const value=Math.floor(progress*end);
     obj.innerHTML=formatter?formatter(value):value;
     if(progress<1) window.requestAnimationFrame(step);
     else obj.innerHTML=formatter?formatter(end):end;
@@ -738,6 +735,7 @@ function doAdminLogout(){
   setTimeout(()=>location.href='index.html',900);
 }
 
+// Auto-refresh every 5 seconds
 setInterval(()=>{
   const nb=JSON.parse(localStorage.getItem('bookings'))||[];
   if(JSON.stringify(nb)!==JSON.stringify(bookings)){
